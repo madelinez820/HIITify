@@ -51,6 +51,19 @@ var code = `
 		input.oninput = function(e){ /* What happens when we change the number in our input box element */
 			validateAndChangeSpeed();  /* We call our function */
 		};
+
+		/* testing building our form */
+		var button = document.createElement('button');
+		button.innerHTML = "Do Something";
+		console.log("DID IT GET HERE");
+		button.id = "buttonidmeow";
+		showChooseWorkout();
+
+		function showChooseWorkout(){
+			var response = prompt("TESTING DID THIS GET HERE");  
+			alert("You typed: " + response); 
+		}
+
 		
 		function validateAndChangeSpeed(value){ 
 			var val = parseFloat( value || (input.value / 100)); /* val must be in format 0.0625 - 16.0 https://stackoverflow.com/a/32320020 */
