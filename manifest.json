@@ -5,9 +5,7 @@
   "permissions": [
     "storage"
   ],
-  "icons": { "16": "speed16.png",
-           "48": "speed48.png",
-          "128": "speed128.png" },
+  "icons": {"168": "logo.png" },
   "content_scripts": [
     {
       "matches": ["https://open.spotify.com/*"],
