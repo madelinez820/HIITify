@@ -55,9 +55,8 @@ var code = `
 
 		//Creating the Choose Your Workout Div ===================================================================
 			// adding button that makes workout div appear and disappear
-			//TODO this doesn't appear
-			var hiitify_button= document.createElement('hiitify_button');
-			hiitify_button.innerHTML = 'Click meme';
+			var hiitify_button= document.createElement('button');
+			hiitify_button.innerHTML = 'HIITify!';
 			hiitify_button.addEventListener("click", ToggleWorkoutStartForm);
 		
 			//creating the div body
@@ -67,7 +66,7 @@ var code = `
 			chooseWorkoutDiv.style.transform =  "translate(-50%,-50%)";
 			chooseWorkoutDiv.style.textAlign ="center";
 			chooseWorkoutDiv.className = "_3cf7cb92e8b34cd675db241406113852-scss";
-			//chooseWorkoutDiv.style.display="none"; //can uncomment once the button used to toggle this works
+			chooseWorkoutDiv.style.display="none"; 
 			chooseWorkoutDiv.id = "chooseWorkoutDiv";
 
 			// workout div's title
@@ -204,22 +203,11 @@ var code = `
 		
 		function timeout() { /* This function is called by itself over and over */
 
-			// //TODO see if this works
-			// if(document.getElementById('hiitify_button') == null) /* check if our hiitify button element doesnt exist */
-			// {
-			// 	try {
-			// 		//document.getElementById('now-playing-bar__left').appendChild(hiitify_button); //TODO
-			// 	}catch{
-			// 		setTimeout(timeout, 100);/*now-playing-bar__left doesnt exist yet so lets try again in 100ms*/
-			// 		return;
-			// 	}
-			// }
-
-
 			if(document.getElementById('speed-extension-input') == null) /* check if our input element doesnt exist */
 			{
 				try {
-					document.getElementsByClassName('now-playing-bar__right')[0].appendChild (input); /* make our input exist on page */
+					document.getElementsByClassName('now-playing-bar__right')[0].appendChild (hiitify_button); /* make our input exist on page */
+					// document.getElementsByClassName('now-playing-bar__right')[0].appendChild (input); /* make our input exist on page */
 				}catch{
 					setTimeout(timeout, 100);/*now-playing-bar__right doesnt exist yet so lets try again in 100ms*/
 					return;
