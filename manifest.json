@@ -3,19 +3,35 @@
   "description": "Customize your favorite Spotify songs to match your HIIT workout with custom BPMs for workout and rest intervals and an overall workout timer.",
   "version": "0.1",
   "permissions": [
-    "storage"
+    "storage",
+        "identity",
+        "tabs",
+        "webNavigation",
+        "https://*.spotify.com/*",
+        "*://*.google.com/*",
+        "storage",
+        "alarms"
   ],
+        "web_accessible_resources": [
+          "/oauth2/*"
+        ],
+        "background": {
+          "scripts": ["eventPage.js"],
+          "persistent": false
+        },
   "icons": {"168": "logo.png" },
   "content_scripts": [
     {
       "matches": ["https://open.spotify.com/*"],
       "js": ["content-script.js"]
-    },
-    {
-      "matches": ["https://open.spotify.com/*"],
-      "js": ["main-content-script.js"],
-      "run_at": "document_end"
     }
+        ,    {
+          "matches": ["https://open.spotify.com/*"],
+          "js": ["main-content-script.js"],
+          "run_at": "document_end"
+        }
   ],
   "manifest_version": 2
 }
+
+

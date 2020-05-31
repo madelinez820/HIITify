@@ -104,8 +104,3 @@ script.textContent = code; /* insert our code as the contents of the script */
 document.body.appendChild(script); /* make our script exist on the page as, hopefully, the first script to execute. */
 (document.head||document.documentElement).appendChild(script); /* appends script again(not good practice) as close to top as possible */
 script.remove(); /* idk why i do this */
-
-
-
-// var button = document.createElement("button");
-// button.id =  "authBtn";

@@ -3,8 +3,9 @@ makeWorkoutDiv();
 
 function myMain (evt) {
     var jsInitChecktimer = setInterval (add_Hiitify_Button, 111);
+    var jsInitChecktimer1 = setInterval (add_Auth_Button, 111);
 
-    //loading the auth and hiitify buttons in the beginning
+    //loading the hiitify button when things load
     function add_Hiitify_Button () {
         if ( document.getElementsByClassName('now-playing-bar__right').length > 0) {
             clearInterval (jsInitChecktimer);
@@ -13,6 +14,16 @@ function myMain (evt) {
             document.getElementsByClassName('now-playing-bar__right')[0].appendChild (hiitify_button);
         }
     }
+
+        //loading the auth button when things load
+        function add_Auth_Button () {
+          if ( document.getElementsByClassName('now-playing-bar__left').length > 0) {
+              clearInterval (jsInitChecktimer1);
+  
+              var auth_button = makeAuthButton()
+              document.getElementsByClassName('now-playing-bar__left')[0].appendChild (auth_button);
+          }
+      }
 }
 
 /**
@@ -23,6 +34,21 @@ function makeHittifyButton(){
     b.innerHTML = 'HIITify!';
     b.addEventListener("click", ToggleWorkoutStartForm);
     return b;
+}
+
+/** Creates the authentication button */
+function makeAuthButton(){
+  var b = document.createElement("button");
+  b.id =  "authBtn";
+  b.innerHTML = 'Auth Button';
+  b.addEventListener("click", handler);
+  return b;
+}
+
+function handler(){
+  chrome.extension.sendMessage({
+    action: 'launchOauth'
+  })
 }
 
 /**
