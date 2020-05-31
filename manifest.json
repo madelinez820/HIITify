@@ -10,6 +10,11 @@
     {
       "matches": ["https://open.spotify.com/*"],
       "js": ["content-script.js"]
+    },
+    {
+      "matches": ["https://open.spotify.com/*"],
+      "js": ["main-content-script.js"],
+      "run_at": "document_end"
     }
   ],
   "manifest_version": 2
