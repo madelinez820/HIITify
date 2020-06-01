@@ -44,7 +44,8 @@ function makeHittifyButton(){
 
 function temp (){
 	console.log("TEMP");
-	getCurrentSongBPM(access_token);
+	getCurrentSong(access_token)
+	.then(data => {console.log(data + "THIS IS DATA")});
 	// chrome.runtime.sendMessage({action: "temp"}, (response) => {
 	// 	console.log(response + "THIS IS RESPONSE"); //  this is undefined
 	//   });
