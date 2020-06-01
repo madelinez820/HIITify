@@ -1,5 +1,10 @@
 window.addEventListener ("load", myMain, false);
 makeWorkoutDiv();
+// var port = chrome.runtime.connect({name: "knockknock"});
+
+var access_token = "";
+var refresh_token = ""; //TODO save later
+
 
 function myMain (evt) {
     var jsInitChecktimer = setInterval (add_Hiitify_Button, 111);
@@ -32,8 +37,19 @@ function myMain (evt) {
 function makeHittifyButton(){
     var b = document.createElement('button');
     b.innerHTML = 'HIITify!';
-    b.addEventListener("click", ToggleWorkoutStartForm);
+	// b.addEventListener("click", ToggleWorkoutStartForm);
+	b.addEventListener("click", temp);
     return b;
+}
+
+function temp (){
+	console.log("TEMP");
+	getCurrentSongBPM(access_token);
+	// chrome.runtime.sendMessage({action: "temp"}, (response) => {
+	// 	console.log(response + "THIS IS RESPONSE"); //  this is undefined
+	//   });
+	// port.postMessage({joke: "Knock knock"});
+
 }
 
 /** Creates the authentication button */
@@ -169,7 +185,7 @@ function ToggleWorkoutStartForm() {
       x.style.display = "block";
     } else {
       x.style.display = "none";
-    }
+	}
 }
 
 /** Triggered when you click the Start! button on the chooseWorkoutDiv. 
@@ -223,7 +239,9 @@ function makeXHR(method, url, token) {
 }
 
 function getCurrentSong(token) {
-	return makeXHR('GET', 'https://api.spotify.com/v1/me/player/currently-playing', token);
+	var test = makeXHR('GET', 'https://api.spotify.com/v1/me/player/currently-playing', token);
+	console.log("rest of first api call " + test);
+	return test;
 }
 
 function getCurrentSongBPM(token) {
@@ -242,11 +260,25 @@ function getCurrentSongBPM(token) {
 	})
 }
 
-
-hiitify_button.addListener(
+chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    getCurrentSongBPM(request.token)
-    sendResponse('WE GOT THE MESSAGE ');
-    return true;
-  }
-);
+	  if (access_token === "" || request.token != null){
+		access_token = request.token;
+	  }
+	// if (request.action === 'temp'){
+	// 	console.log('we got here')
+	// 	getCurrentSongBPM(request.token)
+	// 	sendResponse('WE GOT THE MESSAGE ');
+	// 	return true;
+	// }
+	return true;
+
+//   }
+// );
+
+// port.onMessage.addListener(function(msg) {
+// 	if (msg.question == "Who's there?")
+// 	  port.postMessage({answer: "Madame"});
+// 	else if (msg.question == "Madame who?")
+// 	  port.postMessage({answer: "Madame... Bovary"});
+  });
