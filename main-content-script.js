@@ -4,6 +4,7 @@ makeWorkoutDiv();
 
 var access_token = "";
 var refresh_token = ""; //TODO save later
+var currentSongBPM = 0; // 0 by default (if no song is playing)
 
 
 function myMain (evt) {
@@ -42,14 +43,37 @@ function makeHittifyButton(){
     return b;
 }
 
+// function temp (){
+// 	console.log("TEMP");
+// 	getCurrentSong(access_token)
+// 	.then(data => {console.log(data + "THIS IS SONG ID")});
+// 	// chrome.runtime.sendMessage({action: "temp"}, (response) => {
+// 	// 	console.log(response + "THIS IS RESPONSE"); //  this is undefined
+// 	//   });
+// 	// port.postMessage({joke: "Knock knock"});
+
+// }
 function temp (){
 	console.log("TEMP");
 	getCurrentSong(access_token)
-	.then(data => {console.log(data + "THIS IS SONG ID")});
-	// chrome.runtime.sendMessage({action: "temp"}, (response) => {
-	// 	console.log(response + "THIS IS RESPONSE"); //  this is undefined
-	//   });
-	// port.postMessage({joke: "Knock knock"});
+	.then(id => {
+		console.log("THIS IS SONG ID: " + id);
+		if (id === ""){//if no song is playing
+			return "";
+		}
+		return makeXHR('GET', "	https://api.spotify.com/v1/audio-analysis/" + id, access_token)
+	})
+	.then(data => {
+		if (data === ""){
+			currentSongBPM = 0;
+			console.log("BPM is 0 (no song playing)");
+			return;
+		}
+		let parsedData = JSON.parse(data)
+		currentSongBPM = parsedData.track.tempo
+		console.log("THIS IS THE BPM: " +  currentSongBPM);
+		
+	});
 
 }
 
