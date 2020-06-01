@@ -47,6 +47,7 @@ function makeXhrPostRequest(code, grantType, refreshToken){
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse){
+    console.log("the request: " + request);
   if (request.action === 'launchOauth'){
     chrome.identity.launchWebAuthFlow({
       url: 'https://accounts.spotify.com/authorize'
@@ -63,6 +64,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse){
       makeXhrPostRequest(code, 'authorization_code')
         .then(data => {
           data = JSON.parse(data)
+          access_token = data.access_token;
           chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab){
             if (
               changeInfo.status === 'complete' && tab.url.indexOf('spotify') > -1
@@ -74,6 +76,8 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse){
                   });
               })
             }
+            // return true;// tried this but didn't seem to help bug of error in eventPage.js the message not sending 
+            //(eg: sometimes redirectUrl in line 61 is not defined)
           })
           return data
         })
@@ -82,3 +86,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse){
 
   } //if statment
 })// extension event listener
+
+function getAccessToken(){
+  return access_token;
+}

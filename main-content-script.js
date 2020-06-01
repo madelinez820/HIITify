@@ -45,7 +45,7 @@ function makeHittifyButton(){
 function temp (){
 	console.log("TEMP");
 	getCurrentSong(access_token)
-	.then(data => {console.log(data + "THIS IS DATA")});
+	.then(data => {console.log(data + "THIS IS SONG ID")});
 	// chrome.runtime.sendMessage({action: "temp"}, (response) => {
 	// 	console.log(response + "THIS IS RESPONSE"); //  this is undefined
 	//   });
@@ -239,10 +239,20 @@ function makeXHR(method, url, token) {
   })
 }
 
+/**
+ * Gets the currently playing song's ID. If there is no currently playing song, it returns an empty string ("").
+ * @param token 
+ */
 function getCurrentSong(token) {
-	var test = makeXHR('GET', 'https://api.spotify.com/v1/me/player/currently-playing', token);
-	console.log("rest of first api call " + test);
-	return test;
+	return makeXHR('GET', 'https://api.spotify.com/v1/me/player/currently-playing', token)
+	.then((data) => {
+		if (data === ""){// no song curently playing
+			return "";
+		}
+		let parsedData = JSON.parse(data)
+		let songId = parsedData.item.id;
+		return songId;
+	  })
 }
 
 function getCurrentSongBPM(token) {
