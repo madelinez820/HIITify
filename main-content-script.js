@@ -13,7 +13,7 @@ function myMain (evt) {
             var hiitify_button = makeHittifyButton()
             document.getElementsByClassName('now-playing-bar__right')[0].appendChild (hiitify_button);
         }
-    }
+	}
 
         //loading the auth button when things load
         function add_Auth_Button () {
@@ -22,8 +22,8 @@ function myMain (evt) {
   
               var auth_button = makeAuthButton()
               document.getElementsByClassName('now-playing-bar__left')[0].appendChild (auth_button);
-          }
-      }
+        }
+    }
 }
 
 /**
@@ -184,3 +184,69 @@ function startWorkout(){
   console.log(wi_length, wi_bpm, ri_length, ri_bpm, tw_length)
   ToggleWorkoutStartForm(); // makes the form disappear
 }
+
+function makeXHR(method, url, token) {
+  return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest();
+    xhr.open(method, url, true);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + token)
+    xhr.onload = function(){
+      if (xhr.status >= 200 && xhr.status < 300){
+        return resolve(xhr.response);
+      } else {
+        reject(
+          Error(
+            JSON.stringify(
+              {
+                status: xhr.status,
+                statusTextInElse: xhr.statusText
+              }
+            )
+          )
+        )
+      }
+    }
+    xhr.onerror = function(){
+      reject(
+        Error(
+          JSON.stringify(
+            {
+              status: xhr.status,
+              statusTextInElse: xhr.statusText
+            }
+          )
+        )
+      )
+    }
+    xhr.send()
+  })
+}
+
+function getCurrentSong(token) {
+	return makeXHR('GET', 'https://api.spotify.com/v1/me/player/currently-playing', token);
+}
+
+function getCurrentSongBPM(token) {
+	return getCurrentSong(token)
+	.then(currentSongID => {
+		console.log("FIRST MEOW");
+		console.log(currentSongID.map(data => JSON.parse(data)));
+		return makeXHR('GET', "	https://api.spotify.com/v1/audio-analysis/".concat(currentSongID), token)
+	.then(currentSongInfo =>
+		{
+			let parsedSongInfo = currentSongInfo.map(songInfo => JSON.parse(songInfo));
+			console.log("MEOOOOOOOOOW")
+			console.log(parsedSongInfo);
+			console.log("END OF MEOOOOOOOOOW")
+		})
+	})
+}
+
+
+hiitify_button.addListener(
+  function(request, sender, sendResponse) {
+    getCurrentSongBPM(request.token)
+    sendResponse('WE GOT THE MESSAGE ');
+    return true;
+  }
+);
