@@ -1,13 +1,45 @@
 window.addEventListener ("load", loadButtons, false);
 makeWorkoutDiv();
 dragElement(document.getElementById("chooseWorkoutDiv"));
-// $('#chooseWorkoutDiv').draggable({});
 
+
+//TODO should these be session variables instead? 
 var access_token = "";
 var refresh_token = ""; //TODO save later?
 var currentSongBPM = 0; // 0 by default (if no song is playing)
 
 
+
+
+/** Triggered when you click the Start! button on the chooseWorkoutDiv. 
+ *  wi_length, wi_bpm, ri_length, ri_bpm, tw_length are values from the user inputted fields in chooseWorkoutDiv
+ */
+function startWorkout(){
+	var wi_length = document.getElementById("wi_length").value;
+	var wi_bpm = document.getElementById("wi_bpm").value;
+	var ri_length = document.getElementById("ri_length").value;
+	var ri_bpm = document.getElementById("ri_bpm").value;
+	var tw_length = document.getElementById("tw_length").value;
+	console.log(wi_length, wi_bpm, ri_length, ri_bpm, tw_length)
+	getSongBPM();
+	//ToggleWorkoutDiv(); // makes the form disappear
+  }
+
+/**
+ * Makes the chooseWorkoutDiv appear and disappear
+ */
+function ToggleWorkoutDiv() {
+    var x = document.getElementById("chooseWorkoutDiv");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+	}
+}
+
+/** ============================================================================================================*/
+/*  UI element code
+/** ============================================================================================================*/
 function loadButtons (evt) {
     var jsInitChecktimer = setInterval (add_Hiitify_Button, 111);
     var jsInitChecktimer1 = setInterval (add_Auth_Button, 111);
@@ -39,29 +71,8 @@ function loadButtons (evt) {
 function makeHittifyButton(){
     var b = document.createElement('button');
     b.innerHTML = 'HIITify!';
-	b.addEventListener("click", ToggleWorkoutStartForm);
+	b.addEventListener("click", ToggleWorkoutDiv);
     return b;
-}
-
-function getSongBPM (){
-	getCurrentSong(access_token)
-	.then(id => {
-		console.log("THIS IS SONG ID: " + id);
-		if (id === ""){//if no song is playing
-			return "";
-		}
-		return makeXHR('GET', "	https://api.spotify.com/v1/audio-analysis/" + id, access_token)
-	})
-	.then(data => {
-		if (data === ""){
-			currentSongBPM = 0;
-			console.log("BPM is 0 (no song playing)");
-			return;
-		}
-		let parsedData = JSON.parse(data)
-		currentSongBPM = parsedData.track.tempo
-		console.log("THIS IS THE BPM: " +  currentSongBPM);	
-	});
 }
 
 /** Creates the authentication button */
@@ -89,16 +100,18 @@ function makeWorkoutDiv(){
 			chooseWorkoutDiv.style.transform =  "translate(-50%,-50%)";
 			chooseWorkoutDiv.style.textAlign ="center";
 			chooseWorkoutDiv.className = "_3cf7cb92e8b34cd675db241406113852-scss";
-			// chooseWorkoutDiv.draggable = true;
 			chooseWorkoutDiv.style.display="none"; 
 			chooseWorkoutDiv.id = "chooseWorkoutDiv";
+			//making the div appear in front of the other page elements
+			chooseWorkoutDiv.style.position="absolute";
+			chooseWorkoutDiv.style.zIndex="100";
 
-			// workout div's title
+			// A0. workout div's title
 			var title = document.createElement('H2');
 			title.innerHTML = "Choose Your Workout";
 			chooseWorkoutDiv.appendChild(title)
 			
-			// 1. Work Interval Length
+			// A1. Work Interval Length
 			var wi_length_label = document.createElement("label");
 			wi_length_label.setAttribute("for","wi_length_input");
 			wi_length_label.innerHTML = "Work Interval Length (sec): ";
@@ -112,7 +125,7 @@ function makeWorkoutDiv(){
 			chooseWorkoutDiv.appendChild(wi_length_input);
 			chooseWorkoutDiv.appendChild(document.createElement('br'));
 			
-			// 2. Work Interval BPM
+			// A2. Work Interval BPM
 			var wi_bpm_label = document.createElement("label");
 			wi_bpm_label.setAttribute("for","wi_length_input");
 			wi_bpm_label.innerHTML = "Work Interval BPM: ";
@@ -126,7 +139,7 @@ function makeWorkoutDiv(){
 			chooseWorkoutDiv.appendChild(wi_bpm_input);
 			chooseWorkoutDiv.appendChild(document.createElement('br'));
 			
-			// 3. Rest Interval Length
+			// A3. Rest Interval Length
 			var ri_length_label = document.createElement("label");
 			ri_length_label.setAttribute("for","wi_length_input");
 			ri_length_label.innerHTML = "Rest Interval Length (sec): ";
@@ -140,7 +153,7 @@ function makeWorkoutDiv(){
 			chooseWorkoutDiv.appendChild(ri_length_input);
 			chooseWorkoutDiv.appendChild(document.createElement('br'));
 			
-			// 4. Rest Interval BPM
+			// A4. Rest Interval BPM
 			var ri_bpm_label = document.createElement("label");
 			ri_bpm_label.setAttribute("for","wi_length");
 			ri_bpm_label.innerHTML = "Rest Interval BPM: ";
@@ -154,7 +167,7 @@ function makeWorkoutDiv(){
 			chooseWorkoutDiv.appendChild(ri_bpm_input);
 			chooseWorkoutDiv.appendChild(document.createElement('br'));
 			
-			// 5. Total Workout Length
+			// A5. Total Workout Length
 			var tw_length_label = document.createElement("label");
 			tw_length_label.setAttribute("for","wi_length_input");
 			tw_length_label.innerHTML = "Total Workout Length (min): ";
@@ -168,7 +181,7 @@ function makeWorkoutDiv(){
 			chooseWorkoutDiv.appendChild(tw_length_input);
 			chooseWorkoutDiv.appendChild(document.createElement('br'));
 			
-			// 6. Workout Start Button and cancel button
+			// A6. Workout Start Button and cancel button
 			var start_button = document.createElement("input");
 			start_button.type = "submit";
 			start_button.value = "Start!";
@@ -178,42 +191,15 @@ function makeWorkoutDiv(){
 			cancel_button.type = "submit";
 			cancel_button.value = "cancel";
 			chooseWorkoutDiv.appendChild(cancel_button); 
-			cancel_button.addEventListener("click", ToggleWorkoutStartForm);
-		
-			// making the div appear in front of the other page elements
-			chooseWorkoutDiv.style.position="absolute";
-			chooseWorkoutDiv.style.zIndex="100";
+			cancel_button.addEventListener("click", ToggleWorkoutDiv);
+
       document.body.appendChild(chooseWorkoutDiv);
       
       return chooseWorkoutDiv;
 }
-
-/**
- * Makes the chooseWorkoutDiv appear and disappear
- */
-function ToggleWorkoutStartForm() {
-    var x = document.getElementById("chooseWorkoutDiv");
-    if (x.style.display === "none") {
-      x.style.display = "block";
-    } else {
-      x.style.display = "none";
-	}
-}
-
-/** Triggered when you click the Start! button on the chooseWorkoutDiv. 
- *  wi_length, wi_bpm, ri_length, ri_bpm, tw_length are values from the user inputted fields in chooseWorkoutDiv
- */
-function startWorkout(){
-  var wi_length = document.getElementById("wi_length").value;
-  var wi_bpm = document.getElementById("wi_bpm").value;
-  var ri_length = document.getElementById("ri_length").value;
-  var ri_bpm = document.getElementById("ri_bpm").value;
-  var tw_length = document.getElementById("tw_length").value;
-  console.log(wi_length, wi_bpm, ri_length, ri_bpm, tw_length)
-  getSongBPM();
-  ToggleWorkoutStartForm(); // makes the form disappear
-}
-
+/** ============================================================================================================*/
+/*  Spotify API Call Code
+/** ============================================================================================================*/
 function makeXHR(method, url, token) {
   return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest();
@@ -252,6 +238,30 @@ function makeXHR(method, url, token) {
 }
 
 /**
+ * Returns the BPM of the currently playing song from the Spotify API
+ */
+function getSongBPM (){
+	getCurrentSong(access_token)
+	.then(id => {
+		console.log("THIS IS SONG ID: " + id);
+		if (id === ""){//if no song is playing
+			return "";
+		}
+		return makeXHR('GET', "	https://api.spotify.com/v1/audio-analysis/" + id, access_token)
+	})
+	.then(data => {
+		if (data === ""){
+			currentSongBPM = 0;
+			console.log("BPM is 0 (no song playing)");
+			return;
+		}
+		let parsedData = JSON.parse(data)
+		currentSongBPM = parsedData.track.tempo
+		console.log("THIS IS THE BPM: " +  currentSongBPM);	
+	});
+}
+
+/**
  * Gets the currently playing song's ID. If there is no currently playing song, it returns an empty string ("").
  * @param token 
  */
@@ -267,6 +277,10 @@ function getCurrentSong(token) {
 	  })
 }
 
+/** ============================================================================================================*/
+/*  Saving Access Token Code
+/** ============================================================================================================*/
+
 /**
  * saves the access token (jank) so we can use it. Might fire only after 
  * you get the auth button at least twice and then click on a playlist that 
@@ -280,13 +294,15 @@ chrome.runtime.onMessage.addListener(
 	return true;
   });
 
-/** ======================================================*/
+/** ============================================================================================================*/
+/*  Code to make (chooseWorkoutDiv) draggable
+/** ============================================================================================================*/
+
 /**
  * code to make the chooseWorkoutDiv draggable 
  * we didn't do something  $('#chooseWorkoutDiv').draggable({}); because 
  * it made the div jump at the beginning (because the position is set to be absolute)
  * */
-
 function dragElement(elmnt) {
   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
   if (document.getElementById(elmnt.id + "header")) {
@@ -328,4 +344,4 @@ function dragElement(elmnt) {
     document.onmousemove = null;
   }
 }
-/** ======================================================*/
+/** ============================================================================================================*/
