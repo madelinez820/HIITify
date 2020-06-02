@@ -27,7 +27,7 @@
     }
         ,    {
           "matches": ["https://open.spotify.com/*"],
-          "js": ["main-content-script.js"],
+          "js": ["jquery-3.5.1.min.js","jquery-ui.min.js","main-content-script.js"],
           "run_at": "document_end"
         }
   ],

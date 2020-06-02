@@ -1,5 +1,7 @@
 window.addEventListener ("load", loadButtons, false);
 makeWorkoutDiv();
+dragElement(document.getElementById("chooseWorkoutDiv"));
+// $('#chooseWorkoutDiv').draggable({});
 
 var access_token = "";
 var refresh_token = ""; //TODO save later?
@@ -37,12 +39,11 @@ function loadButtons (evt) {
 function makeHittifyButton(){
     var b = document.createElement('button');
     b.innerHTML = 'HIITify!';
-	// b.addEventListener("click", ToggleWorkoutStartForm);
-	b.addEventListener("click", temp);
+	b.addEventListener("click", ToggleWorkoutStartForm);
     return b;
 }
 
-function temp (){
+function getSongBPM (){
 	getCurrentSong(access_token)
 	.then(id => {
 		console.log("THIS IS SONG ID: " + id);
@@ -59,8 +60,7 @@ function temp (){
 		}
 		let parsedData = JSON.parse(data)
 		currentSongBPM = parsedData.track.tempo
-		console.log("THIS IS THE BPM: " +  currentSongBPM);
-		
+		console.log("THIS IS THE BPM: " +  currentSongBPM);	
 	});
 }
 
@@ -89,6 +89,7 @@ function makeWorkoutDiv(){
 			chooseWorkoutDiv.style.transform =  "translate(-50%,-50%)";
 			chooseWorkoutDiv.style.textAlign ="center";
 			chooseWorkoutDiv.className = "_3cf7cb92e8b34cd675db241406113852-scss";
+			// chooseWorkoutDiv.draggable = true;
 			chooseWorkoutDiv.style.display="none"; 
 			chooseWorkoutDiv.id = "chooseWorkoutDiv";
 
@@ -209,6 +210,7 @@ function startWorkout(){
   var ri_bpm = document.getElementById("ri_bpm").value;
   var tw_length = document.getElementById("tw_length").value;
   console.log(wi_length, wi_bpm, ri_length, ri_bpm, tw_length)
+  getSongBPM();
   ToggleWorkoutStartForm(); // makes the form disappear
 }
 
@@ -265,6 +267,11 @@ function getCurrentSong(token) {
 	  })
 }
 
+/**
+ * saves the access token (jank) so we can use it. Might fire only after 
+ * you get the auth button at least twice and then click on a playlist that 
+ * changes the window's url
+ */
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 	  if (access_token === "" || request.token != null){
@@ -272,3 +279,53 @@ chrome.runtime.onMessage.addListener(
 	  }
 	return true;
   });
+
+/** ======================================================*/
+/**
+ * code to make the chooseWorkoutDiv draggable 
+ * we didn't do something  $('#chooseWorkoutDiv').draggable({}); because 
+ * it made the div jump at the beginning (because the position is set to be absolute)
+ * */
+
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "header")) {
+    // if present, the header is where you move the DIV from:
+    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+  } else {
+	// otherwise, move the DIV from anywhere inside the DIV:
+	elmnt.onmousedown = dragMouseDown;
+  }
+  function dragMouseDown(e) {
+	if ((e.target.tagName === "INPUT") || (e.target.tagName === "input")){ //no dragging in input fields (or else you can't type anything), TODO might need to do this for other elements we add
+		return;
+	}
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+  function closeDragElement() {
+    // stop moving when mouse button is released:
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+/** ======================================================*/
