@@ -1,13 +1,12 @@
-window.addEventListener ("load", myMain, false);
+window.addEventListener ("load", loadButtons, false);
 makeWorkoutDiv();
-// var port = chrome.runtime.connect({name: "knockknock"});
 
 var access_token = "";
-var refresh_token = ""; //TODO save later
+var refresh_token = ""; //TODO save later?
 var currentSongBPM = 0; // 0 by default (if no song is playing)
 
 
-function myMain (evt) {
+function loadButtons (evt) {
     var jsInitChecktimer = setInterval (add_Hiitify_Button, 111);
     var jsInitChecktimer1 = setInterval (add_Auth_Button, 111);
 
@@ -43,18 +42,7 @@ function makeHittifyButton(){
     return b;
 }
 
-// function temp (){
-// 	console.log("TEMP");
-// 	getCurrentSong(access_token)
-// 	.then(data => {console.log(data + "THIS IS SONG ID")});
-// 	// chrome.runtime.sendMessage({action: "temp"}, (response) => {
-// 	// 	console.log(response + "THIS IS RESPONSE"); //  this is undefined
-// 	//   });
-// 	// port.postMessage({joke: "Knock knock"});
-
-// }
 function temp (){
-	console.log("TEMP");
 	getCurrentSong(access_token)
 	.then(id => {
 		console.log("THIS IS SONG ID: " + id);
@@ -74,7 +62,6 @@ function temp (){
 		console.log("THIS IS THE BPM: " +  currentSongBPM);
 		
 	});
-
 }
 
 /** Creates the authentication button */
@@ -85,7 +72,6 @@ function makeAuthButton(){
   b.addEventListener("click", handler);
   return b;
 }
-
 function handler(){
   chrome.extension.sendMessage({
     action: 'launchOauth'
@@ -279,41 +265,10 @@ function getCurrentSong(token) {
 	  })
 }
 
-function getCurrentSongBPM(token) {
-	return getCurrentSong(token)
-	.then(currentSongID => {
-		console.log("FIRST MEOW");
-		console.log(currentSongID.map(data => JSON.parse(data)));
-		return makeXHR('GET', "	https://api.spotify.com/v1/audio-analysis/".concat(currentSongID), token)
-	.then(currentSongInfo =>
-		{
-			let parsedSongInfo = currentSongInfo.map(songInfo => JSON.parse(songInfo));
-			console.log("MEOOOOOOOOOW")
-			console.log(parsedSongInfo);
-			console.log("END OF MEOOOOOOOOOW")
-		})
-	})
-}
-
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 	  if (access_token === "" || request.token != null){
 		access_token = request.token;
 	  }
-	// if (request.action === 'temp'){
-	// 	console.log('we got here')
-	// 	getCurrentSongBPM(request.token)
-	// 	sendResponse('WE GOT THE MESSAGE ');
-	// 	return true;
-	// }
 	return true;
-
-//   }
-// );
-
-// port.onMessage.addListener(function(msg) {
-// 	if (msg.question == "Who's there?")
-// 	  port.postMessage({answer: "Madame"});
-// 	else if (msg.question == "Madame who?")
-// 	  port.postMessage({answer: "Madame... Bovary"});
   });
