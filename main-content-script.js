@@ -22,7 +22,7 @@ function startWorkout(){
 	var tw_length = document.getElementById("tw_length").value;
 	console.log(wi_length, wi_bpm, ri_length, ri_bpm, tw_length)
 	getSongBPM();
-	//ToggleWorkoutDiv(); // makes the form disappear
+	ToggleStartStopWorkout();
   }
 
 /**
@@ -35,6 +35,60 @@ function ToggleWorkoutDiv() {
     } else {
       x.style.display = "none";
 	}
+}
+
+/**
+ * Toggles between the settings elements and the workout elements
+ * settings elements = input fields for work interval length (sec), rest interval BPM, etc.
+ * workout elements = play/pause button, timer countdown etc.
+ */
+function ToggleStartStopWorkout() {
+	var settingsElements = ["workout_title", "wi_length_label", "wi_length", "wi_bpm_label", "wi_bpm", 
+		"ri_length_label", "ri_length", "ri_bpm_label", "ri_bpm", "tw_length_label", "tw_length", "start_button","cancel_button",
+		"br1", "br2", "br3", "br4", "br5", "br6", "br7", "br8", "br9", "br10"];
+	var workoutElements = ["hiitify_title","total_time_remaining","interval_time_remaining","interval_type_label",
+	"reset_speed_button","play_pause_button","end_workout_button", "speed-extension-input"];
+	for (i = 0; i < settingsElements.length; i++){
+		var x = document.getElementById(settingsElements[i]);
+		if (x.style.display === "none"){
+			if (x.nodeName != "BR"){ // super jank but apparently <br>s shouldn't be displayed again after they are shown once or else they create extra unwanted space
+				x.style.display = "block";
+			}
+
+		  } else {
+			x.style.display = "none";
+		}
+	}
+	for (i = 0; i < workoutElements.length; i++){
+		var x = document.getElementById(workoutElements[i]);
+		if (x.style.display === "none") {
+			x.style.display = "block";
+		  } else {
+			x.style.display = "none";
+		}
+	}
+}
+
+/**
+ * resets the current song's speed to its original speed using the API
+ */
+function  resetSpeed(){
+	console.log('resetSpeed');
+}
+
+/**
+ * pauses and continues the HIIT countdown (doesn't affect the song play)
+ */
+function  playPause(){
+	console.log('playPause');
+}
+
+/**
+ * Ends the HIIT workout
+ */
+function  endWorkout(){
+	ToggleStartStopWorkout();
+	console.log('endWorkout');
 }
 
 /** ============================================================================================================*/
@@ -109,89 +163,170 @@ function makeWorkoutDiv(){
 			// A0. workout div's title
 			var title = document.createElement('H2');
 			title.innerHTML = "Choose Your Workout";
+			title.id="workout_title";
 			chooseWorkoutDiv.appendChild(title)
 			
 			// A1. Work Interval Length
 			var wi_length_label = document.createElement("label");
 			wi_length_label.setAttribute("for","wi_length_input");
 			wi_length_label.innerHTML = "Work Interval Length (sec): ";
+			wi_length_label.id = "wi_length_label";
 			chooseWorkoutDiv.appendChild(wi_length_label);
-			chooseWorkoutDiv.appendChild(document.createElement('br'));
+			var br1 = document.createElement('br');
+			br1.id ="br1";
+			chooseWorkoutDiv.appendChild(br1);
 			var wi_length_input = document.createElement("input");
 			wi_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			wi_length_input.id="wi_length";
 			wi_length_input.type = "number";
 			wi_length_input.value="30";
 			chooseWorkoutDiv.appendChild(wi_length_input);
-			chooseWorkoutDiv.appendChild(document.createElement('br'));
+			var br2 = document.createElement('br');
+			br2.id ="br2";
+			chooseWorkoutDiv.appendChild(br2);
 			
 			// A2. Work Interval BPM
 			var wi_bpm_label = document.createElement("label");
 			wi_bpm_label.setAttribute("for","wi_length_input");
 			wi_bpm_label.innerHTML = "Work Interval BPM: ";
+			wi_bpm_label.id = "wi_bpm_label";
 			chooseWorkoutDiv.appendChild(wi_bpm_label);
-			chooseWorkoutDiv.appendChild(document.createElement('br'));
+			var br3 = document.createElement('br');
+			br3.id ="br3";
+			chooseWorkoutDiv.appendChild(br3);
 			var wi_bpm_input = document.createElement("input");
 			wi_bpm_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			wi_bpm_input.id="wi_bpm";
 			wi_bpm_input.type = "number";
 			wi_bpm_input.value="160";
 			chooseWorkoutDiv.appendChild(wi_bpm_input);
-			chooseWorkoutDiv.appendChild(document.createElement('br'));
+			var br4 = document.createElement('br');
+			br4.id ="br4";
+			chooseWorkoutDiv.appendChild(br4);
 			
 			// A3. Rest Interval Length
 			var ri_length_label = document.createElement("label");
 			ri_length_label.setAttribute("for","wi_length_input");
 			ri_length_label.innerHTML = "Rest Interval Length (sec): ";
+			ri_length_label.id = "ri_length_label";
 			chooseWorkoutDiv.appendChild(ri_length_label);
-			chooseWorkoutDiv.appendChild(document.createElement('br'));
+			var br5 = document.createElement('br');
+			br5.id ="br5";
+			chooseWorkoutDiv.appendChild(br5);
 			var ri_length_input = document.createElement("input");
 			ri_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			ri_length_input.id="ri_length";
 			ri_length_input.type = "number";
 			ri_length_input.value = "10";
 			chooseWorkoutDiv.appendChild(ri_length_input);
-			chooseWorkoutDiv.appendChild(document.createElement('br'));
+			var br6 = document.createElement('br');
+			br6.id ="br6";
+			chooseWorkoutDiv.appendChild(br6);
 			
 			// A4. Rest Interval BPM
 			var ri_bpm_label = document.createElement("label");
 			ri_bpm_label.setAttribute("for","wi_length");
 			ri_bpm_label.innerHTML = "Rest Interval BPM: ";
+			ri_bpm_label.id = "ri_bpm_label";
 			chooseWorkoutDiv.appendChild(ri_bpm_label);
-			chooseWorkoutDiv.appendChild(document.createElement('br'));
+			var br7 = document.createElement('br');
+			br7.id ="br7";
+			chooseWorkoutDiv.appendChild(br7);
 			var ri_bpm_input = document.createElement("input");
 			ri_bpm_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			ri_bpm_input.id="ri_bpm";
 			ri_bpm_input.type = "number";
 			ri_bpm_input.value = "115";
 			chooseWorkoutDiv.appendChild(ri_bpm_input);
-			chooseWorkoutDiv.appendChild(document.createElement('br'));
+			var br8 = document.createElement('br');
+			br8.id ="br8";
+			chooseWorkoutDiv.appendChild(br8);
 			
 			// A5. Total Workout Length
 			var tw_length_label = document.createElement("label");
 			tw_length_label.setAttribute("for","wi_length_input");
 			tw_length_label.innerHTML = "Total Workout Length (min): ";
+			tw_length_label.id = "tw_length_label";
 			chooseWorkoutDiv.appendChild(tw_length_label);
-			chooseWorkoutDiv.appendChild(document.createElement('br'));
+			var br9 = document.createElement('br');
+			br9.id ="br9";
+			chooseWorkoutDiv.appendChild(br9);
 			var tw_length_input = document.createElement("input");
 			tw_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			tw_length_input.id="tw_length";
 			tw_length_input.type = "number";
 			tw_length_input.value = "10";
 			chooseWorkoutDiv.appendChild(tw_length_input);
-			chooseWorkoutDiv.appendChild(document.createElement('br'));
+			var br10 = document.createElement('br');
+			br10.id ="br10";
+			chooseWorkoutDiv.appendChild(br10);
 			
 			// A6. Workout Start Button and cancel button
 			var start_button = document.createElement("input");
 			start_button.type = "submit";
 			start_button.value = "Start!";
+			start_button.id = "start_button";
 			chooseWorkoutDiv.appendChild(start_button); 
 			start_button.addEventListener("click", startWorkout);
 			var cancel_button = document.createElement("input");
 			cancel_button.type = "submit";
 			cancel_button.value = "cancel";
+			cancel_button.id = "cancel_button";
 			chooseWorkoutDiv.appendChild(cancel_button); 
 			cancel_button.addEventListener("click", ToggleWorkoutDiv);
+
+			// B0. workout div's title
+			var hiitify_title = document.createElement('H2');
+			hiitify_title.innerHTML = "HIITify";
+			hiitify_title.id="hiitify_title";
+			hiitify_title.style.display = "none";
+			chooseWorkoutDiv.appendChild(hiitify_title)
+
+			//B1. total time remaining - could be a countdown or maybe a bar with % done?
+			var total_time_remaining = document.createElement('p');
+			total_time_remaining.innerHTML = "5:20"; //TODO replace dynamically
+			total_time_remaining.id = "total_time_remaining";
+			total_time_remaining.style.display = "none";
+			chooseWorkoutDiv.appendChild(total_time_remaining);
+
+			//B2. interval time remaining
+			var interval_time_remaining = document.createElement('H1');
+			interval_time_remaining.innerHTML = "24";
+			interval_time_remaining.id = "interval_time_remaining";
+			interval_time_remaining.style.display = "none"
+			chooseWorkoutDiv.appendChild(interval_time_remaining);
+
+			//B3. interval type
+			var interval_type_label = document.createElement('H2');
+			interval_type_label.innerHTML = "Workout!"; //TODO replace dynamically
+			interval_type_label.id = "interval_type_label";
+			interval_type_label.style.display = "none";
+			chooseWorkoutDiv.appendChild(interval_type_label);
+			
+			//B4. reset speed button
+			var reset_speed_button = document.createElement('button');
+			reset_speed_button.innerHTML = 'Reset Speed';
+			reset_speed_button.id = 'reset_speed_button';
+			reset_speed_button.addEventListener("click", resetSpeed);
+			reset_speed_button.style.display = "none";
+			chooseWorkoutDiv.appendChild(reset_speed_button);
+
+			//B5. play pause button
+			var play_pause_button = document.createElement('button');
+			play_pause_button.innerHTML = 'Play / Pause'; //TODO try to instead get it to look like spotify play pause
+			play_pause_button.id = 'play_pause_button';
+			play_pause_button.addEventListener("click", playPause);
+			play_pause_button.style.display = "none";
+			chooseWorkoutDiv.appendChild(play_pause_button);
+
+			//B6. stop button
+			var end_workout_button = document.createElement('button');
+			end_workout_button.innerHTML = 'End Workout';
+			end_workout_button.id = 'end_workout_button';
+			end_workout_button.addEventListener("click", endWorkout);
+			end_workout_button.style.display = "none";
+			chooseWorkoutDiv.appendChild(end_workout_button);
+
 
       document.body.appendChild(chooseWorkoutDiv);
       
@@ -313,7 +448,7 @@ function dragElement(elmnt) {
 	elmnt.onmousedown = dragMouseDown;
   }
   function dragMouseDown(e) {
-	if ((e.target.tagName === "INPUT") || (e.target.tagName === "input")){ //no dragging in input fields (or else you can't type anything), TODO might need to do this for other elements we add
+	if ((e.target.tagName === "INPUT") || (e.target.tagName === "input")){ //no dragging in input fields (or else you can't type anything), TODO dothis for other elements we add that you don't want draggable
 		return;
 	}
     e = e || window.event;

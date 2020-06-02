@@ -50,7 +50,8 @@ var code = `
 		input.style = 'background-color: #08080859;'
 			+ 'border: #823333;'
 			+ 'width: 45px;'
-			+ 'margin: 5px;';
+			+ 'margin: 5px;'
+			+ 'display: none;';
 		input.value = lastSpeed * 100;
 		input.oninput = function(e){ /* What happens when we change the number in our input box element */
 			validateAndChangeSpeed();  /* We call our function */
@@ -79,6 +80,7 @@ var code = `
 			if(document.getElementById('speed-extension-input') == null) /* check if our input element doesnt exist */
 			{
 				try {
+					document.getElementById('chooseWorkoutDiv').appendChild(input);
 					// document.getElementsByClassName('now-playing-bar__right')[0].appendChild (input); /* make our input exist on page */
 				}catch{
 					setTimeout(timeout, 100);/*now-playing-bar__right doesnt exist yet so lets try again in 100ms*/
