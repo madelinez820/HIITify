@@ -27,6 +27,17 @@ function startWorkout(){
 	localStorage.setItem("twLength", tw_length);
 	getSongBPM();
 	ToggleStartStopWorkout();
+	console.log("Starting Workout");
+	console.log(document.getElementById("speed-extension-input"));
+	speed_button = document.getElementById("speed-extension-input");
+
+	speed_button.value = "80"; //hardcoded see if this works
+	var setSpeedEvent = new Event ('ínput',{
+		bubbles:true,
+		cancelable:true, //TODO see if bubbles and cancelable should be set true or nah (defgault is false)
+	})
+	speed_button.dispatchEvent(setSpeedEvent);
+
   }
 
 /**
