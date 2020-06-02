@@ -4,7 +4,6 @@ dragElement(document.getElementById("chooseWorkoutDiv"));
 
 
 //TODO should these be session variables instead? 
-var access_token = "";
 var refresh_token = ""; //TODO save later?
 var currentSongBPM = 0; // 0 by default (if no song is playing)
 
@@ -21,6 +20,11 @@ function startWorkout(){
 	var ri_bpm = document.getElementById("ri_bpm").value;
 	var tw_length = document.getElementById("tw_length").value;
 	console.log(wi_length, wi_bpm, ri_length, ri_bpm, tw_length)
+	localStorage.setItem("wiLength", wi_length);
+	localStorage.setItem("wiBPM", wi_bpm);
+	localStorage.setItem("riLength", ri_length);
+	localStorage.setItem("riBPM", ri_bpm);
+	localStorage.setItem("twLength", tw_length);
 	getSongBPM();
 	ToggleStartStopWorkout();
   }
@@ -179,7 +183,7 @@ function makeWorkoutDiv(){
 			wi_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			wi_length_input.id="wi_length";
 			wi_length_input.type = "number";
-			wi_length_input.value="30";
+			wi_length_input.value= (localStorage.getItem("wiLength") == undefined) ? "30" : localStorage.getItem("wiLength");
 			chooseWorkoutDiv.appendChild(wi_length_input);
 			var br2 = document.createElement('br');
 			br2.id ="br2";
@@ -198,7 +202,7 @@ function makeWorkoutDiv(){
 			wi_bpm_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			wi_bpm_input.id="wi_bpm";
 			wi_bpm_input.type = "number";
-			wi_bpm_input.value="160";
+			wi_bpm_input.value= (localStorage.getItem("wiBPM") == undefined) ? "160" : localStorage.getItem("wiBPM");
 			chooseWorkoutDiv.appendChild(wi_bpm_input);
 			var br4 = document.createElement('br');
 			br4.id ="br4";
@@ -217,7 +221,7 @@ function makeWorkoutDiv(){
 			ri_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			ri_length_input.id="ri_length";
 			ri_length_input.type = "number";
-			ri_length_input.value = "10";
+			ri_length_input.value= (localStorage.getItem("riLength") == undefined) ? "10" : localStorage.getItem("riLength");
 			chooseWorkoutDiv.appendChild(ri_length_input);
 			var br6 = document.createElement('br');
 			br6.id ="br6";
@@ -237,6 +241,7 @@ function makeWorkoutDiv(){
 			ri_bpm_input.id="ri_bpm";
 			ri_bpm_input.type = "number";
 			ri_bpm_input.value = "115";
+			ri_bpm_input.value= (localStorage.getItem("riBPM") == undefined) ? "100" : localStorage.getItem("riBPM");
 			chooseWorkoutDiv.appendChild(ri_bpm_input);
 			var br8 = document.createElement('br');
 			br8.id ="br8";
@@ -255,7 +260,7 @@ function makeWorkoutDiv(){
 			tw_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			tw_length_input.id="tw_length";
 			tw_length_input.type = "number";
-			tw_length_input.value = "10";
+			tw_length_input.value= (localStorage.getItem("twLength") == undefined) ? "10" : localStorage.getItem("twLength");
 			chooseWorkoutDiv.appendChild(tw_length_input);
 			var br10 = document.createElement('br');
 			br10.id ="br10";
@@ -376,13 +381,13 @@ function makeXHR(method, url, token) {
  * Returns the BPM of the currently playing song from the Spotify API
  */
 function getSongBPM (){
-	getCurrentSong(access_token)
+	getCurrentSong(localStorage.getItem("accessToken"))
 	.then(id => {
 		console.log("THIS IS SONG ID: " + id);
 		if (id === ""){//if no song is playing
 			return "";
 		}
-		return makeXHR('GET', "	https://api.spotify.com/v1/audio-analysis/" + id, access_token)
+		return makeXHR('GET', "	https://api.spotify.com/v1/audio-analysis/" + id, localStorage.getItem("accessToken"))
 	})
 	.then(data => {
 		if (data === ""){
@@ -393,6 +398,7 @@ function getSongBPM (){
 		let parsedData = JSON.parse(data)
 		currentSongBPM = parsedData.track.tempo
 		console.log("THIS IS THE BPM: " +  currentSongBPM);	
+		sessionStorage.setItem("currentSongBPM", currentSongBPM);
 	});
 }
 
@@ -408,6 +414,7 @@ function getCurrentSong(token) {
 		}
 		let parsedData = JSON.parse(data)
 		let songId = parsedData.item.id;
+		sessionStorage.setItem("currentSongID", songId);
 		return songId;
 	  })
 }
@@ -423,8 +430,8 @@ function getCurrentSong(token) {
  */
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-	  if (access_token === "" || request.token != null){
-		access_token = request.token;
+	  if (localStorage.getItem("accessToken") === "" || request.token != null){
+		localStorage.setItem("accessToken", request.token);
 	  }
 	return true;
   });
