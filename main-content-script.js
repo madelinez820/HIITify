@@ -60,13 +60,16 @@ function ToggleWorkoutDiv() {
 function ToggleStartStopWorkout() {
 	var settingsElements = ["workout_title", "wi_length_label", "wi_length", "wi_bpm_label", "wi_bpm", 
 		"ri_length_label", "ri_length", "ri_bpm_label", "ri_bpm", "tw_length_label", "tw_length", "start_button","cancel_button",
-		"br1", "br2", "br3", "br4", "br5", "br6", "br7", "br8", "br9", "br10"];
+		 "br1", "br2", "br3", "br4", "br5", "br6", "br7", "br8", "br9", "br10"];
 	var workoutElements = ["hiitify_title","total_time_remaining","interval_time_remaining","interval_type_label",
 	"reset_speed_button","play_pause_button","end_workout_button", "speed-extension-input"];
 	for (i = 0; i < settingsElements.length; i++){
 		var x = document.getElementById(settingsElements[i]);
 		if (x.style.display === "none"){
-			if (x.nodeName != "BR"){ // super jank but apparently <br>s shouldn't be displayed again after they are shown once or else they create extra unwanted space
+			if (x.nodeName == "BUTTON"){ // default styling for buttons isn't block apparently
+				x.style.display = "";
+			}
+			else if (x.nodeName != "BR"){ // super jank but apparently <br>s shouldn't be displayed again after they are shown once or else they create extra unwanted space
 				x.style.display = "block";
 			}
 
@@ -278,15 +281,13 @@ function makeWorkoutDiv(){
 			chooseWorkoutDiv.appendChild(br10);
 			
 			// A6. Workout Start Button and cancel button
-			var start_button = document.createElement("input");
-			start_button.type = "submit";
-			start_button.value = "Start!";
+			var start_button = document.createElement("button");
+			start_button.innerHTML = "Start!";
 			start_button.id = "start_button";
 			chooseWorkoutDiv.appendChild(start_button); 
 			start_button.addEventListener("click", startWorkout);
-			var cancel_button = document.createElement("input");
-			cancel_button.type = "submit";
-			cancel_button.value = "cancel";
+			var cancel_button = document.createElement("button");
+			cancel_button.innerHTML = "cancel";
 			cancel_button.id = "cancel_button";
 			chooseWorkoutDiv.appendChild(cancel_button); 
 			cancel_button.addEventListener("click", ToggleWorkoutDiv);
@@ -466,7 +467,9 @@ function dragElement(elmnt) {
 	elmnt.onmousedown = dragMouseDown;
   }
   function dragMouseDown(e) {
-	if ((e.target.tagName === "INPUT") || (e.target.tagName === "input")){ //no dragging in input fields (or else you can't type anything), TODO dothis for other elements we add that you don't want draggable
+	//NOTE: do this for other elements we add that you don't want draggable
+	//no dragging in input fields or buttons (or else you can't type anything or release buttons without clicking it), 
+	if ((e.target.tagName === "INPUT") || (e.target.tagName === "BUTTON")){ 
 		return;
 	}
     e = e || window.event;
