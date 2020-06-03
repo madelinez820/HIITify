@@ -3,33 +3,9 @@ makeWorkoutDiv();
 dragElement(document.getElementById("chooseWorkoutDiv"));
 
 
-/** Triggered when you click the Start! button on the chooseWorkoutDiv. 
- *  wi_length, wi_bpm, ri_length, ri_bpm, tw_length are values from the user inputted fields in chooseWorkoutDiv
- */
-function startWorkout(){
-	var wi_length = document.getElementById("wi_length").value;
-	var wi_bpm = document.getElementById("wi_bpm").value;
-	var ri_length = document.getElementById("ri_length").value;
-	var ri_bpm = document.getElementById("ri_bpm").value;
-	var tw_length = document.getElementById("tw_length").value;
-	console.log(wi_length, wi_bpm, ri_length, ri_bpm, tw_length)
-	localStorage.setItem("wiLength", wi_length);
-	localStorage.setItem("wiBPM", wi_bpm);
-	localStorage.setItem("riLength", ri_length);
-	localStorage.setItem("riBPM", ri_bpm);
-	localStorage.setItem("twLength", tw_length);
-	getSongBPM();
-	ToggleStartStopWorkout();
-	console.log("Starting Workout");
-
-	//TODO fix bug:
-	//there's a race condition here - by the time getSongBPM() updates "currentSongBPM" in sessionStorage
-	//with the current song's BPM, sessionStorage.getItem("currentSongBPM") already is called
-	//with the previous song's BPM, setting the playback speed to the previous song's desired one
-	//instead of the current one's desired one
-	changeCurrentSongToSpeed(bpmToPercentageSpeed(localStorage.getItem("wiBPM")));
-
-  }
+/** ============================================================================================================*/
+/*  BPM Calculation Code
+/** ============================================================================================================*/
 
 /**
  * Given a BPM, it calculates the percentage increase / decrease in speed (where 
@@ -50,6 +26,94 @@ function changeCurrentSongToSpeed(speedPercentage){
 	speed_button.dispatchEvent(setSpeedEvent);
 }
 
+/** ============================================================================================================*/
+/*  Timer Code
+/** ============================================================================================================*/
+
+/**
+ * Counts down the entire workout (assuming twLength is in minutes)
+ * @param {*} duration  - seconds
+ * @param {*} display  - div that has the countdown going
+ */
+function startTimer(duration, display) {  //TODO make this have pause / play (maybe look at this this: https://codepen.io/yaphi1/pen/QbzrQP)
+	var timer = duration, minutes, seconds;
+	
+	var t = document.getElementById("total_time_remaining");
+	t.innerHTML = localStorage.getItem("twLength") + ":00";
+    setInterval(function () {
+        minutes = parseInt(timer / 60, 10)
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+		if (--timer < 0) { // when time runs out
+			//stop workout
+        }
+    }, 1000);
+}
+/** ============================================================================================================*/
+/*  Button Click Code
+/** ============================================================================================================*/
+
+/** Triggered when you click the Start! button on the chooseWorkoutDiv. 
+ *  wi_length, wi_bpm, ri_length, ri_bpm, tw_length are values from the user inputted fields in chooseWorkoutDiv
+ */
+function startWorkout(){
+	var wi_length = document.getElementById("wi_length").value;
+	var wi_bpm = document.getElementById("wi_bpm").value;
+	var ri_length = document.getElementById("ri_length").value;
+	var ri_bpm = document.getElementById("ri_bpm").value;
+	var tw_length = document.getElementById("tw_length").value;
+	console.log(wi_length, wi_bpm, ri_length, ri_bpm, tw_length)
+	localStorage.setItem("wiLength", wi_length);
+	localStorage.setItem("wiBPM", wi_bpm);
+	localStorage.setItem("riLength", ri_length);
+	localStorage.setItem("riBPM", ri_bpm);
+	localStorage.setItem("twLength", tw_length);
+	getSongBPM();
+	ToggleStartStopWorkout();
+	console.log("Starting Workout");
+	startTimer(tw_length * 60, document.getElementById("total_time_remaining")); //TODO add first 3 seconds
+
+	//TODO fix bug:
+	//there's a race condition here - by the time getSongBPM() updates "currentSongBPM" in sessionStorage
+	//with the current song's BPM, sessionStorage.getItem("currentSongBPM") already is called
+	//with the previous song's BPM, setting the playback speed to the previous song's desired one
+	//instead of the current one's desired one
+	changeCurrentSongToSpeed(bpmToPercentageSpeed(wi_bpm));
+  }
+
+/**
+ * resets the current song's speed to its original speed using the API
+ */
+function  resetSpeed(){
+	changeCurrentSongToSpeed(100);
+	console.log('resetSpeed');
+}
+
+/**
+ * pauses and continues the HIIT countdown (doesn't affect the song play)
+ */
+function  playPause(){
+	console.log('playPause');
+}
+
+/**
+ * Ends the HIIT workout
+ */
+function endWorkout(){
+	ToggleStartStopWorkout();
+	changeCurrentSongToSpeed(100);
+	console.log('endWorkout');
+}
+
+/** ============================================================================================================*/
+/*  UI elements appearing and disappearing
+/** ============================================================================================================*/
+
 /**
  * Makes the chooseWorkoutDiv appear and disappear
  */
@@ -61,7 +125,6 @@ function ToggleWorkoutDiv() {
       x.style.display = "none";
 	}
 }
-
 /**
  * Toggles between the settings elements and the workout elements
  * settings elements = input fields for work interval length (sec), rest interval BPM, etc.
@@ -96,32 +159,6 @@ function ToggleStartStopWorkout() {
 		}
 	}
 }
-
-/**
- * resets the current song's speed to its original speed using the API
- */
-function  resetSpeed(){
-	changeCurrentSongToSpeed(100);
-	console.log('resetSpeed');
-	
-}
-
-/**
- * pauses and continues the HIIT countdown (doesn't affect the song play)
- */
-function  playPause(){
-	console.log('playPause');
-}
-
-/**
- * Ends the HIIT workout
- */
-function  endWorkout(){
-	ToggleStartStopWorkout();
-	changeCurrentSongToSpeed(100);
-	console.log('endWorkout');
-}
-
 /** ============================================================================================================*/
 /*  UI element code
 /** ============================================================================================================*/
@@ -314,7 +351,6 @@ function makeWorkoutDiv(){
 
 			//B1. total time remaining - could be a countdown or maybe a bar with % done?
 			var total_time_remaining = document.createElement('p');
-			total_time_remaining.innerHTML = "5:20"; //TODO replace dynamically
 			total_time_remaining.id = "total_time_remaining";
 			total_time_remaining.style.display = "none";
 			chooseWorkoutDiv.appendChild(total_time_remaining);
@@ -471,7 +507,7 @@ chrome.runtime.onMessage.addListener(
 
 /**
  * code to make the chooseWorkoutDiv draggable 
- * we didn't do something  $('#chooseWorkoutDiv').draggable({}); because 
+ * we didn't do something like $('#chooseWorkoutDiv').draggable({}); because 
  * it made the div jump at the beginning (because the position is set to be absolute)
  * */
 function dragElement(elmnt) {
