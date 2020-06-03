@@ -3,13 +3,6 @@ makeWorkoutDiv();
 dragElement(document.getElementById("chooseWorkoutDiv"));
 
 
-//TODO should these be session variables instead? 
-var refresh_token = ""; //TODO save later?
-var currentSongBPM = 0; // 0 by default (if no song is playing)
-
-
-
-
 /** Triggered when you click the Start! button on the chooseWorkoutDiv. 
  *  wi_length, wi_bpm, ri_length, ri_bpm, tw_length are values from the user inputted fields in chooseWorkoutDiv
  */
@@ -28,17 +21,31 @@ function startWorkout(){
 	getSongBPM();
 	ToggleStartStopWorkout();
 	console.log("Starting Workout");
-	
-	changeCurrentSongToBPM("80");//TODO hardcoded 
+
+	//TODO fix bug:
+	//there's a race condition here - by the time getSongBPM() updates "currentSongBPM" in sessionStorage
+	//with the current song's BPM, sessionStorage.getItem("currentSongBPM") already is called
+	//with the previous song's BPM, setting the playback speed to the previous song's desired one
+	//instead of the current one's desired one
+	changeCurrentSongToSpeed(bpmToPercentageSpeed(localStorage.getItem("wiBPM")));
 
   }
 
 /**
- * changes the currently playing song to the specified BPM
+ * Given a BPM, it calculates the percentage increase / decrease in speed (where 
+ * original BPM = 100%) using the song's stored original BPM
+ * @param bpm 
  */
-function changeCurrentSongToBPM(bpm){ 
+function bpmToPercentageSpeed(bpm){
+	return 100 * bpm / sessionStorage.getItem("currentSongBPM");
+}
+/**
+ * changes the currently playing song to the specified BPM
+ * @param speedPercentage: 100 for normal speed, < 100 for slower, >100 for faster 
+ */
+function changeCurrentSongToSpeed(speedPercentage){ 
 	var speed_button = document.getElementById("speed-extension-input");
-	speed_button.value = bpm; 
+	speed_button.value = speedPercentage.toString();
 	var setSpeedEvent = new Event ('changeSpeed');
 	speed_button.dispatchEvent(setSpeedEvent);
 }
@@ -94,7 +101,9 @@ function ToggleStartStopWorkout() {
  * resets the current song's speed to its original speed using the API
  */
 function  resetSpeed(){
+	changeCurrentSongToSpeed(100);
 	console.log('resetSpeed');
+	
 }
 
 /**
@@ -109,6 +118,7 @@ function  playPause(){
  */
 function  endWorkout(){
 	ToggleStartStopWorkout();
+	changeCurrentSongToSpeed(100);
 	console.log('endWorkout');
 }
 
@@ -439,8 +449,8 @@ function getCurrentSong(token) {
 /** ============================================================================================================*/
 
 /**
- * saves the access token (jank) so we can use it. Might fire only after 
- * you get the auth button at least twice and then click on a playlist that 
+ * saves the access token so we can use it. 
+ * TODO: Might fire only after you get the auth button at least twice and then click on a playlist that 
  * changes the window's url
  */
 chrome.runtime.onMessage.addListener(
@@ -448,6 +458,10 @@ chrome.runtime.onMessage.addListener(
 	  if (localStorage.getItem("accessToken") === "" || request.token != null){
 		localStorage.setItem("accessToken", request.token);
 	  }
+	//   //TODO shouldn't this be something like this instead:
+	//   if (localStorage.getItem("accessToken") != request.token && request.token != null && request.token != undefined){
+	// 	localStorage.setItem("accessToken", request.token);
+	//   }
 	return true;
   });
 
