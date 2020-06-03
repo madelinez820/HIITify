@@ -56,6 +56,7 @@ var code = `
 		input.oninput = function(e){ /* What happens when we change the number in our input box element */
 			validateAndChangeSpeed();  /* We call our function */
 		};
+		input.addEventListener('changeSpeed', function (e) { validateAndChangeSpeed(); }, false);
 	  //===================================================================
 		
 		function validateAndChangeSpeed(value){ 
