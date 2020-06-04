@@ -1,6 +1,7 @@
 window.addEventListener ("load", loadButtons, false);
 makeWorkoutDiv();
 dragElement(document.getElementById("chooseWorkoutDiv"));
+var workoutTimer; //TODO maybe I can move this into smaller scope
 
 
 /** ============================================================================================================*/
@@ -35,24 +36,33 @@ function changeCurrentSongToSpeed(speedPercentage){
  * @param {*} duration  - seconds
  * @param {*} display  - div that has the countdown going
  */
-function startTimer(duration, display) {  //TODO make this have pause / play (maybe look at this this: https://codepen.io/yaphi1/pen/QbzrQP)
+function startTimer(duration, display) {  //startTimer=run_clock TODO make this have pause / play (maybe look at this this: https://codepen.io/yaphi1/pen/QbzrQP)
 	var timer = duration, minutes, seconds;
+	window.sessionStorage.setItem("current_workout_remaining_time",duration);
+	window.sessionStorage.setItem("workout_ongoing", true); // lets us toggle play / pause
 	
 	var t = document.getElementById("total_time_remaining");
-	t.innerHTML = localStorage.getItem("twLength") + ":00";
-    setInterval(function () {
+	update_clock();
+	workoutTimer = setInterval(update_clock, 1000);
+
+	function update_clock() {
         minutes = parseInt(timer / 60, 10)
-        seconds = parseInt(timer % 60, 10);
+		seconds = parseInt(timer % 60, 10);
 
         minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
+		seconds = seconds < 10 ? "0" + seconds : seconds;
+
+		window.sessionStorage.setItem("current_workout_remaining_time",timer);
 
         display.textContent = minutes + ":" + seconds;
 
 		if (--timer < 0) { // when time runs out
 			//stop workout
+			clearInterval(workoutTimer)
+			window.sessionStorage.removeItem("current_workout_remaining_time")
+			window.sessionStorage.removeItem("workout_ongoing")
         }
-    }, 1000);
+    }
 }
 /** ============================================================================================================*/
 /*  Button Click Code
@@ -98,7 +108,19 @@ function  resetSpeed(){
  * pauses and continues the HIIT countdown (doesn't affect the song play)
  */
 function  playPause(){
-	console.log('playPause');
+	var p = document.getElementById("play_pause_button");
+	if (window.sessionStorage.getItem("workout_ongoing")=== "true"){ // workout / timer currently going
+		p.innerHTML = "Play";
+		window.sessionStorage.setItem("workout_ongoing", false);
+		clearInterval(workoutTimer);
+
+	} else{ //workout / timercurrently paused
+		window.sessionStorage.setItem("workout_ongoing", true);
+		p.innerHTML = "Pause";
+		startTimer(window.sessionStorage.getItem("current_workout_remaining_time"), document.getElementById("total_time_remaining"));
+
+	}
+
 }
 
 /**
@@ -106,6 +128,9 @@ function  playPause(){
  */
 function endWorkout(){
 	ToggleStartStopWorkout();
+
+	//cleaning up variables / state
+	clearInterval(workoutTimer);
 	changeCurrentSongToSpeed(100);
 	console.log('endWorkout');
 }
@@ -379,7 +404,7 @@ function makeWorkoutDiv(){
 
 			//B5. play pause button
 			var play_pause_button = document.createElement('button');
-			play_pause_button.innerHTML = 'Play / Pause'; //TODO try to instead get it to look like spotify play pause
+			play_pause_button.innerHTML = 'Pause'; //TODO try to instead get it to look like spotify play pause
 			play_pause_button.id = 'play_pause_button';
 			play_pause_button.addEventListener("click", playPause);
 			play_pause_button.style.display = "none";
