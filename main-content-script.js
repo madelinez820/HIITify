@@ -1,8 +1,31 @@
+
+/** ============================================================================================================*/
+/*  Descriptions of variables stored in local / session storage (note that all variables must be strings)
+local storage:
+- wiLength = how long (sec) each workout interval is (set from user input)
+- wiBPM = how fast (BPM) the music is during each workout interval (set from user input)
+- riLength = how long (sec) each rest interval is (set from user input)
+- riBPM = how fast (BPM) the music is during each rest interval (set from user input)
+- twLength = the total time (min) of the entire workout (set from user input)
+- accessToken = the current token that can be used to query infof from the Spotify API (set from Spotify OAuth)
+
+session storage:
+- currentWorkoutRemainingTime = how long the workout has to go  
+- isWorkoutOngoing = "true" if it's going and the counter is going down, "false" if it is paused / ended
+- currentSongID = id of currently playing song, "" if there is no currently playing song (queried from Spotify API) 
+- currentSongOriginalBPM BPM of currently playing song, 0 if there is no currently playing song (queried from Spotify API)
+
+/** ============================================================================================================*/
+
+
 window.addEventListener ("load", loadButtons, false);
 makeWorkoutDiv();
 dragElement(document.getElementById("chooseWorkoutDiv"));
-var workoutTimer; //TODO maybe I can move this into smaller scope
-
+var workoutTimer; //TODO if this moves into sessionstorage, might run into issue of it still being there if you refresh and start another workout
+//TODO bug: sometimes if speed-input-extension registers 0 or is empty then the song won't play at all if it is 0 / empty
+	// this might be fixed if we fix the race condition bug
+	// use case to consider in addition: if no song playing, and user hits start workout, should speed-input-extension have 0 or 100?
+// and then you press the song play button (the infinite buffering we were seeing in the beginning)
 
 /** ============================================================================================================*/
 /*  BPM Calculation Code
@@ -14,7 +37,7 @@ var workoutTimer; //TODO maybe I can move this into smaller scope
  * @param bpm 
  */
 function bpmToPercentageSpeed(bpm){
-	return 100 * bpm / sessionStorage.getItem("currentSongBPM");
+	return 100 * bpm / sessionStorage.getItem("currentSongOriginalBPM");
 }
 /**
  * changes the currently playing song to the specified BPM
@@ -38,8 +61,8 @@ function changeCurrentSongToSpeed(speedPercentage){
  */
 function startTimer(duration, display) {  //startTimer=run_clock TODO make this have pause / play (maybe look at this this: https://codepen.io/yaphi1/pen/QbzrQP)
 	var timer = duration, minutes, seconds;
-	window.sessionStorage.setItem("current_workout_remaining_time",duration);
-	window.sessionStorage.setItem("workout_ongoing", true); // lets us toggle play / pause
+	window.sessionStorage.setItem("currentWorkoutRemainingTime",duration);
+	window.sessionStorage.setItem("isWorkoutOngoing", true); // lets us toggle play / pause
 	
 	var t = document.getElementById("total_time_remaining");
 	update_clock();
@@ -52,14 +75,14 @@ function startTimer(duration, display) {  //startTimer=run_clock TODO make this 
         minutes = minutes < 10 ? "0" + minutes : minutes;
 		seconds = seconds < 10 ? "0" + seconds : seconds;
 
-		window.sessionStorage.setItem("current_workout_remaining_time",timer);
+		window.sessionStorage.setItem("currentWorkoutRemainingTime",timer);
 
         display.textContent = minutes + ":" + seconds;
 
 		if (--timer < 0) { // when time runs out
 			//stop workout
 			clearInterval(workoutTimer)
-			window.sessionStorage.removeItem("current_workout_remaining_time")
+			window.sessionStorage.removeItem("currentWorkoutRemainingTime")
 			window.sessionStorage.removeItem("workout_ongoing")
         }
     }
@@ -89,8 +112,8 @@ function startWorkout(){
 	startTimer(tw_length * 60, document.getElementById("total_time_remaining")); //TODO add first 3 seconds
 
 	//TODO fix bug:
-	//there's a race condition here - by the time getSongBPM() updates "currentSongBPM" in sessionStorage
-	//with the current song's BPM, sessionStorage.getItem("currentSongBPM") already is called
+	//there's a race condition here - by the time getSongBPM() updates "currentSongOriginalBPM" in sessionStorage
+	//with the current song's BPM, sessionStorage.getItem("currentSongOriginalBPM") already is called
 	//with the previous song's BPM, setting the playback speed to the previous song's desired one
 	//instead of the current one's desired one
 	changeCurrentSongToSpeed(bpmToPercentageSpeed(wi_bpm));
@@ -109,15 +132,15 @@ function  resetSpeed(){
  */
 function  playPause(){
 	var p = document.getElementById("play_pause_button");
-	if (window.sessionStorage.getItem("workout_ongoing")=== "true"){ // workout / timer currently going
+	if (window.sessionStorage.getItem("isWorkoutOngoing")=== "true"){ // workout / timer currently going
 		p.innerHTML = "Play";
-		window.sessionStorage.setItem("workout_ongoing", false);
+		window.sessionStorage.setItem("isWorkoutOngoing", false);
 		clearInterval(workoutTimer);
 
 	} else{ //workout / timercurrently paused
-		window.sessionStorage.setItem("workout_ongoing", true);
+		window.sessionStorage.setItem("isWorkoutOngoing", true);
 		p.innerHTML = "Pause";
-		startTimer(window.sessionStorage.getItem("current_workout_remaining_time"), document.getElementById("total_time_remaining"));
+		startTimer(window.sessionStorage.getItem("currentWorkoutRemainingTime"), document.getElementById("total_time_remaining"));
 
 	}
 
@@ -484,7 +507,7 @@ function getSongBPM (){
 		let parsedData = JSON.parse(data)
 		currentSongBPM = parsedData.track.tempo
 		console.log("THIS IS THE BPM: " +  currentSongBPM);	
-		sessionStorage.setItem("currentSongBPM", currentSongBPM);
+		sessionStorage.setItem("currentSongOriginalBPM", currentSongBPM);
 	});
 }
 
@@ -516,14 +539,10 @@ function getCurrentSong(token) {
  */
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-	  if (localStorage.getItem("accessToken") === "" || request.token != null){
-		localStorage.setItem("accessToken", request.token);
-	  }
-	//   //TODO shouldn't this be something like this instead:
-	//   if (localStorage.getItem("accessToken") != request.token && request.token != null && request.token != undefined){
-	// 	localStorage.setItem("accessToken", request.token);
-	//   }
-	return true;
+		if (localStorage.getItem("accessToken") != request.token && request.token != null && request.token != undefined){
+			localStorage.setItem("accessToken", request.token);
+		}
+		return true;
   });
 
 /** ============================================================================================================*/
