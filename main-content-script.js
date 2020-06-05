@@ -185,7 +185,6 @@ function beep(i){
  *  wi_length, wi_bpm, ri_length, ri_bpm, tw_length are values from the user inputted fields in chooseWorkoutDiv
  */
 function startWorkout(){
-	//TODO all input fields should accept only positive  / 0 ints only (eg: 01 messes things up)?
 	console.log("Starting Workout");
 
 	var wi_length = parseInt(document.getElementById("wi_length").value, 10);
@@ -199,15 +198,7 @@ function startWorkout(){
 	localStorage.setItem("riLength", ri_length);
 	localStorage.setItem("riBPM", ri_bpm);
 	localStorage.setItem("twLength", tw_length);
-	//TODO fix bug: 01, decimals etc. makes things go wrong
 
-	//TODO fix bug:
-	//there's a race condition here - by the time getSongBPM() updates "currentSongOriginalBPM" in sessionStorage
-	//with the current song's BPM, sessionStorage.getItem("currentSongOriginalBPM") already is called
-	//with the previous song's BPM, setting the playback speed to the previous song's desired one
-	//instead of the current one's desired one
-	
-	getSongBPM();
 	ToggleStartStopWorkout();
 
 	// simulate a rest interval of 3 seconds so the user doesn't start the workout interval immediately
@@ -216,21 +207,36 @@ function startWorkout(){
 	
 	var interval_length_with_three = tw_length * 60 + 3;
 
-	startTimer(interval_length_with_three); //TODO add first 3 seconds
+	startTimer(interval_length_with_three); 
 
-	if (sessionStorage.getItem("currentSongOriginalBPM") != null && sessionStorage.getItem("currentSongOriginalBPM") != "0" && sessionStorage.getItem("currentSongOriginalBPM") != undefined ){
-		//in case there is no current song playing or something goes wrong and currentSongOriginalBPM is never set, now speed stays at 100 instead of going to 0.
-		changeCurrentSongToSpeed(bpmToPercentageSpeed(wi_bpm)); 
-	}
-
+	getAndUpdateBPM(wi_bpm);
   }
 
 /**
  * resets the current song's speed to its original speed using the API
  */
-function  resetSpeed(){
+function resetSpeed(){
 	changeCurrentSongToSpeed(100);
 	console.log('resetSpeed');
+}
+
+function getAndUpdateBPM(new_bpm) {
+	getSongBPM().then((sondBPM) => {
+		updateBPM(new_bpm)
+		printSpeedMultiplier();
+	})
+}
+
+function updateBPM(new_bpm) {
+	if (sessionStorage.getItem("currentSongOriginalBPM") != null && sessionStorage.getItem("currentSongOriginalBPM") != "0" && sessionStorage.getItem("currentSongOriginalBPM") != undefined ){
+		//in case there is no current song playing or something goes wrong and currentSongOriginalBPM is never set, now speed stays at 100 instead of going to 0.
+		changeCurrentSongToSpeed(bpmToPercentageSpeed(new_bpm)); 
+	};
+	return;
+}
+
+function printSpeedMultiplier(){
+	console.log("THIS IS SPEED MULTIPLIER " + document.getElementById("speed-extension-input").value);
 }
 
 /**
@@ -620,18 +626,18 @@ function makeXHR(method, url, token) {
 /**
  * Returns the BPM of the currently playing song from the Spotify API
  */
-function getSongBPM (){
-	getCurrentSong(localStorage.getItem("accessToken"))
+function getSongBPM(){
+	let promise = getCurrentSong(localStorage.getItem("accessToken"))
 	.then(id => {
 		console.log("THIS IS SONG ID: " + id);
-		if (id === ""){//if no song is playing
+		if (id === ""){ //if no song is playing
 			return "";
 		}
 		return makeXHR('GET', "	https://api.spotify.com/v1/audio-analysis/" + id, localStorage.getItem("accessToken"))
 	})
 	.then(data => {
 		if (data === ""){
-			currentSongBPM = 0;
+			currentSongBPM = 0; // maybe dangerous
 			console.log("BPM is 0 (no song playing)");
 			return;
 		}
@@ -640,6 +646,7 @@ function getSongBPM (){
 		console.log("THIS IS THE BPM: " +  currentSongBPM);	
 		sessionStorage.setItem("currentSongOriginalBPM", currentSongBPM);
 	});
+	return promise;
 }
 
 /**
