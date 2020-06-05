@@ -65,19 +65,22 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse){
         .then(data => {
           data = JSON.parse(data)
           access_token = data.access_token;
+
+          chrome.storage.sync.set({'accessToken': access_token}, function() {
+            console.log('Settings saved');
+          });
           chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab){
             if (
               changeInfo.status === 'complete' && tab.url.indexOf('spotify') > -1
             || changeInfo.status === 'complete' && tab.url.indexOf('spotify') > -1 && tab.url.indexOf('user') > -1 && tab.url.indexOf('playlists') === -1
           ) {
+            // not sure if this message is necessary anymore
               chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
                   chrome.tabs.sendMessage(tabs[0].id, {token: data.access_token}, function(response) {
                     console.log('response is ', response)
                   });
               })
             }
-            // return true;// tried this but didn't seem to help bug of error in eventPage.js the message not sending 
-            //(eg: sometimes redirectUrl in line 61 is not defined)
           })
           return data
         })

@@ -1,6 +1,6 @@
 
 /** ============================================================================================================*/
-/*  Descriptions of variables stored in local / session storage (note that all variables must be strings)
+/*  Descriptions of variables stored in local / session storage (note that all variables must be STRINGS)
 local storage:
 - wiLength = how long (sec) each workout interval is (set from user input)
 - wiBPM = how fast (BPM) the music is during each workout interval (set from user input)
@@ -106,17 +106,26 @@ function startWorkout(){
 	localStorage.setItem("riLength", ri_length);
 	localStorage.setItem("riBPM", ri_bpm);
 	localStorage.setItem("twLength", tw_length);
-	getSongBPM();
-	ToggleStartStopWorkout();
-	console.log("Starting Workout");
-	startTimer(tw_length * 60, document.getElementById("total_time_remaining")); //TODO add first 3 seconds
 
 	//TODO fix bug:
 	//there's a race condition here - by the time getSongBPM() updates "currentSongOriginalBPM" in sessionStorage
 	//with the current song's BPM, sessionStorage.getItem("currentSongOriginalBPM") already is called
 	//with the previous song's BPM, setting the playback speed to the previous song's desired one
 	//instead of the current one's desired one
-	changeCurrentSongToSpeed(bpmToPercentageSpeed(wi_bpm));
+
+	//TODO question:
+	// should the song currenty playing speed reset on page refresh or if you close out the tab? right now, it's not
+	
+	getSongBPM();
+	ToggleStartStopWorkout();
+	console.log("Starting Workout");
+	startTimer(tw_length * 60, document.getElementById("total_time_remaining")); //TODO add first 3 seconds
+
+	if (sessionStorage.getItem("currentSongOriginalBPM") !== null && sessionStorage.getItem("currentSongOriginalBPM") !== "0" && sessionStorage.getItem("currentSongOriginalBPM") !== undefined ){
+		//in case there is no current song playing or something goes wrong and currentSongOriginalBPM is never set, now speed stays at 100 instead of going to 0.
+		changeCurrentSongToSpeed(bpmToPercentageSpeed(wi_bpm)); 
+	}
+
   }
 
 /**
@@ -536,14 +545,24 @@ function getCurrentSong(token) {
  * saves the access token so we can use it. 
  * TODO: Might fire only after you get the auth button at least twice and then click on a playlist that 
  * changes the window's url
+ * TODO look at this maybe? https://stackoverflow.com/questions/3937000/chrome-extension-accessing-localstorage-in-content-script
  */
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-		if (localStorage.getItem("accessToken") != request.token && request.token != null && request.token != undefined){
-			localStorage.setItem("accessToken", request.token);
-		}
-		return true;
+
   });
+   
+chrome.storage.onChanged.addListener(function(changes, area) {
+    if (area == "sync" && "accessToken" in changes) {
+        chrome.storage.sync.get(['accessToken'], function(items) {
+			var token = items["accessToken"];
+			if (localStorage.getItem("accessToken") != token && token != null && token != undefined){
+				localStorage.setItem("accessToken", token);
+			}
+			return true;
+		});
+	}
+});
 
 /** ============================================================================================================*/
 /*  Code to make (chooseWorkoutDiv) draggable
