@@ -55,12 +55,15 @@ function changeCurrentSongToSpeed(speedPercentage){
 /**
  * Counts down the entire workout (assuming twLength is in minutes)
  * @param {*} duration  - seconds
- * some use cases / functionality we tested: 
+ * some use cases / functionality we tested (keeping in mind expected BPM / text colors / audio): 
  *  - wiLength / riLength are both 0, or 1 of them is 0
  *  - riLength / wiLength is < 3
  *  - pause / play when there is 1 second left in the interval
  *  - pause / play when there is 1 second left in the workout
  *  - wiLength / riLength are different #s
+ *  - running through the entire workout and starting the workout again
+ *  - stop in the middle and refresh page
+ *  - song is not playing when you press start workout
  */
 function startTimer(duration, fromPause) {
 	fromPause = fromPause || false;  
@@ -103,7 +106,7 @@ function startTimer(duration, fromPause) {
 
 		//add audio and visual cues to signal last 3 seconds / start of an interval
 		intervalTypeText.style.color = (sessionStorage.getItem("currentIntervalType") == "work" ) ? "#39ff14": "#ff0000"; //neon green if work interval, neon red if rest interval
-		if (timer <= 5){ //red on last 5 seconds of the workout
+		if (timer <= 3){ //red on last 5 seconds of the workout
 			display_total_time.style.color = "#ff0000"; // neon red 
 			beep("last");
 		}
@@ -153,6 +156,7 @@ function startTimer(duration, fromPause) {
 		if (--timer < 0) { // when time runs out, stop workout
 			//TODO maybe congrats yadda yadda
 			beep("first");
+			display_total_time.style.color = "";
 			cleanUpWorkoutVariables();
 			ToggleStartStopWorkout();
         }
@@ -184,11 +188,11 @@ function startWorkout(){
 	//TODO all input fields should accept only positive  / 0 ints only (eg: 01 messes things up)?
 	console.log("Starting Workout");
 
-	var wi_length = document.getElementById("wi_length").value;
-	var wi_bpm = document.getElementById("wi_bpm").value;
-	var ri_length = document.getElementById("ri_length").value;
-	var ri_bpm = document.getElementById("ri_bpm").value;
-	var tw_length = document.getElementById("tw_length").value;
+	var wi_length = parseInt(document.getElementById("wi_length").value, 10);
+	var wi_bpm = parseInt(document.getElementById("wi_bpm").value, 10);
+	var ri_length = parseInt(document.getElementById("ri_length").value, 10);
+	var ri_bpm = parseInt(document.getElementById("ri_bpm").value, 10);
+	var tw_length = parseInt(document.getElementById("tw_length").value, 10);
 	console.log(wi_length, wi_bpm, ri_length, ri_bpm, tw_length)
 	localStorage.setItem("wiLength", wi_length);
 	localStorage.setItem("wiBPM", wi_bpm);
@@ -381,6 +385,14 @@ function handler(){
 }
 
 /**
+ * Only positive whole numbers can be entered into the input text boxes
+ * @param event 
+ */
+function OnlyNums (event){
+	return(event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : event.charCode >= 48 && event.charCode <= 57;
+}
+
+/**
  * Creates the chooseWorkoutDiv
  */
 function makeWorkoutDiv(){
@@ -415,7 +427,7 @@ function makeWorkoutDiv(){
 			var wi_length_input = document.createElement("input");
 			wi_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			wi_length_input.id="wi_length";
-			wi_length_input.type = "number";
+			wi_length_input.onkeypress = OnlyNums;
 			wi_length_input.value= (localStorage.getItem("wiLength") == undefined) ? "30" : localStorage.getItem("wiLength");
 			chooseWorkoutDiv.appendChild(wi_length_input);
 			var br2 = document.createElement('br');
@@ -434,7 +446,7 @@ function makeWorkoutDiv(){
 			var wi_bpm_input = document.createElement("input");
 			wi_bpm_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			wi_bpm_input.id="wi_bpm";
-			wi_bpm_input.type = "number";
+			wi_bpm_input.onkeypress = OnlyNums;
 			wi_bpm_input.value= (localStorage.getItem("wiBPM") == undefined) ? "160" : localStorage.getItem("wiBPM");
 			chooseWorkoutDiv.appendChild(wi_bpm_input);
 			var br4 = document.createElement('br');
@@ -453,7 +465,7 @@ function makeWorkoutDiv(){
 			var ri_length_input = document.createElement("input");
 			ri_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			ri_length_input.id="ri_length";
-			ri_length_input.type = "number";
+			ri_length_input.onkeypress = OnlyNums;
 			ri_length_input.value= (localStorage.getItem("riLength") == undefined) ? "10" : localStorage.getItem("riLength");
 			chooseWorkoutDiv.appendChild(ri_length_input);
 			var br6 = document.createElement('br');
@@ -472,7 +484,7 @@ function makeWorkoutDiv(){
 			var ri_bpm_input = document.createElement("input");
 			ri_bpm_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			ri_bpm_input.id="ri_bpm";
-			ri_bpm_input.type = "number";
+			ri_bpm_input.onkeypress = OnlyNums;
 			ri_bpm_input.value = "115";
 			ri_bpm_input.value= (localStorage.getItem("riBPM") == undefined) ? "100" : localStorage.getItem("riBPM");
 			chooseWorkoutDiv.appendChild(ri_bpm_input);
@@ -492,7 +504,7 @@ function makeWorkoutDiv(){
 			var tw_length_input = document.createElement("input");
 			tw_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			tw_length_input.id="tw_length";
-			tw_length_input.type = "number";
+			tw_length_input.onkeypress = OnlyNums;
 			tw_length_input.value= (localStorage.getItem("twLength") == undefined) ? "10" : localStorage.getItem("twLength");
 			chooseWorkoutDiv.appendChild(tw_length_input);
 			var br10 = document.createElement('br');
