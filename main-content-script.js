@@ -22,10 +22,6 @@ window.addEventListener ("load", loadButtons, false);
 makeWorkoutDiv();
 dragElement(document.getElementById("chooseWorkoutDiv"));
 var workoutTimer; //TODO if this moves into sessionstorage, might run into issue of it still being there if you refresh and start another workout
-//TODO bug: sometimes if speed-input-extension registers 0 or is empty then the song won't play at all if it is 0 / empty
-	// this might be fixed if we fix the race condition bug
-	// use case to consider in addition: if no song playing, and user hits start workout, should speed-input-extension have 0 or 100?
-// and then you press the song play button (the infinite buffering we were seeing in the beginning)
 
 /** ============================================================================================================*/
 /*  BPM Calculation Code
@@ -114,7 +110,9 @@ function startWorkout(){
 	//instead of the current one's desired one
 
 	//TODO question:
-	// should the song currenty playing speed reset on page refresh or if you close out the tab? right now, it's not
+	// should the song currenty playing speed reset on page refresh or if you close out the tab without ending workout? right now, it's not
+	// potential solution: changeCurrentSongToSpeed(100) at the beginning as soon as speed-input-extension is created so that
+	// the song doesn't stay fast / slow.
 	
 	getSongBPM();
 	ToggleStartStopWorkout();
@@ -541,17 +539,15 @@ function getCurrentSong(token) {
 /*  Saving Access Token Code
 /** ============================================================================================================*/
 
-/**
- * saves the access token so we can use it. 
- * TODO: Might fire only after you get the auth button at least twice and then click on a playlist that 
- * changes the window's url
- * TODO look at this maybe? https://stackoverflow.com/questions/3937000/chrome-extension-accessing-localstorage-in-content-script
- */
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
+//TODO https://developer.spotify.com/documentation/ios/guides/token-swap-and-refresh/ -> tokenRefreshURL - should we try to refresh the token
+// automatically for the user? eg: we can save it here in localStorage like we did for the access_token (refresh is data.refresh_token when 
+// we use chrome.storage.sync in eventPage.js) and then when we make a bad call due to an expired token, we can catch that call and 
+// get a new token and redo the call?
 
-  });
-   
+
+/**
+ * saves the access token so we can use it.
+ */   
 chrome.storage.onChanged.addListener(function(changes, area) {
     if (area == "sync" && "accessToken" in changes) {
         chrome.storage.sync.get(['accessToken'], function(items) {

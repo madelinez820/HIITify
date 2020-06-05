@@ -67,21 +67,8 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse){
           access_token = data.access_token;
 
           chrome.storage.sync.set({'accessToken': access_token}, function() {
-            console.log('Settings saved');
+            console.log('Access token saved');
           });
-          chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab){
-            if (
-              changeInfo.status === 'complete' && tab.url.indexOf('spotify') > -1
-            || changeInfo.status === 'complete' && tab.url.indexOf('spotify') > -1 && tab.url.indexOf('user') > -1 && tab.url.indexOf('playlists') === -1
-          ) {
-            // not sure if this message is necessary anymore
-              chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-                  chrome.tabs.sendMessage(tabs[0].id, {token: data.access_token}, function(response) {
-                    console.log('response is ', response)
-                  });
-              })
-            }
-          })
           return data
         })
         .catch(err => console.error(err))
