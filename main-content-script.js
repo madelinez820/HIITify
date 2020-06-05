@@ -7,13 +7,15 @@ local storage:
 - riLength = how long (sec) each rest interval is (set from user input)
 - riBPM = how fast (BPM) the music is during each rest interval (set from user input)
 - twLength = the total time (min) of the entire workout (set from user input)
-- accessToken = the current token that can be used to query infof from the Spotify API (set from Spotify OAuth)
+- accessToken = the current token that can be used to query info from the Spotify API (set from Spotify OAuth)
 
 session storage:
-- currentWorkoutRemainingTime = how long the workout has to go  
+- currentWorkoutRemainingTime = how long (sec) the workout has to go
 - isWorkoutOngoing = "true" if it's going and the counter is going down, "false" if it is paused / ended
 - currentSongID = id of currently playing song, "" if there is no currently playing song (queried from Spotify API) 
-- currentSongOriginalBPM BPM of currently playing song, 0 if there is no currently playing song (queried from Spotify API)
+- currentSongOriginalBPM BPM of currently playing song, "0" if there is no currently playing song (queried from Spotify API)
+- currentIntervalType = "rest" / "work"
+- currentIntervalRemainingTime = how long (sec) the interval has to go
 
 /** ============================================================================================================*/
 
@@ -21,7 +23,7 @@ session storage:
 window.addEventListener ("load", loadButtons, false);
 makeWorkoutDiv();
 dragElement(document.getElementById("chooseWorkoutDiv"));
-var workoutTimer; //TODO if this moves into sessionstorage, might run into issue of it still being there if you refresh and start another workout
+var workoutTimer;
 
 /** ============================================================================================================*/
 /*  BPM Calculation Code
@@ -53,33 +55,97 @@ function changeCurrentSongToSpeed(speedPercentage){
 /**
  * Counts down the entire workout (assuming twLength is in minutes)
  * @param {*} duration  - seconds
- * @param {*} display  - div that has the countdown going
+ * some use cases / functionality we tested: 
+ *  - wiLength / riLength are both 0, or 1 of them is 0
+ *  - riLength / wiLength is < 3
+ *  - pause / play when there is 1 second left in the interval
+ *  - pause / play when there is 1 second left in the workout
+ *  - wiLength / riLength are different #s
  */
-function startTimer(duration, display) {  //startTimer=run_clock TODO make this have pause / play (maybe look at this this: https://codepen.io/yaphi1/pen/QbzrQP)
+function startTimer(duration, fromPause) {
+	fromPause = fromPause || false;  
+	var display_total_time = document.getElementById("total_time_remaining");
+	var intervalTimeRemainingText = document.getElementById("interval_time_remaining");
+	var intervalTypeText = document.getElementById("interval_type_label");
+	var total_time = parseInt(localStorage.getItem("twLength") * 60); 
+	
 	var timer = duration, minutes, seconds;
 	window.sessionStorage.setItem("currentWorkoutRemainingTime",duration);
-	window.sessionStorage.setItem("isWorkoutOngoing", true); // lets us toggle play / pause
-	
-	var t = document.getElementById("total_time_remaining");
-	update_clock();
+	window.sessionStorage.setItem("isWorkoutOngoing", true); 
+	if (!fromPause){
+		update_clock(); // called once before so we don't initially pause a second
+	}
+
 	workoutTimer = setInterval(update_clock, 1000);
 
 	function update_clock() {
+		// changes the total time remaining display
         minutes = parseInt(timer / 60, 10)
 		seconds = parseInt(timer % 60, 10);
-
         minutes = minutes < 10 ? "0" + minutes : minutes;
 		seconds = seconds < 10 ? "0" + seconds : seconds;
+		if (timer > total_time) {// total time remaining display shouldn't count down in the 3 second rest added to the beginning of the workout
+			display_total_time.textContent = minutes + ":00";
+		} else{
+			display_total_time.textContent = minutes + ":" + seconds;
+		}
 
-		window.sessionStorage.setItem("currentWorkoutRemainingTime",timer);
+		//edge case where both workout and rest interval length are 0 (the user really shouldn't input this in lol)
+		if ((localStorage.getItem("wiLength") == "0") && (localStorage.getItem("riLength") == "0")){	
+			timer = timer - 1;
+			return;
+		}
 
-        display.textContent = minutes + ":" + seconds;
+		// changes the interval time remaining display
+		var currentIntervalRemainingTime =  sessionStorage.getItem("currentIntervalRemainingTime");
+		intervalTimeRemainingText.innerHTML = currentIntervalRemainingTime;
+		intervalTypeText.innerHTML = sessionStorage.getItem("currentIntervalType");
 
-		if (--timer < 0) { // when time runs out
-			//stop workout
-			clearInterval(workoutTimer)
-			window.sessionStorage.removeItem("currentWorkoutRemainingTime")
-			window.sessionStorage.removeItem("workout_ongoing")
+		//add audio and visual cues to signal last 3 seconds / start of an interval
+		if (parseInt(currentIntervalRemainingTime, 10) <= 3){
+			console.log("RED");
+			intervalTimeRemainingText.style.color = "#fff";
+		}
+		if ((currentIntervalRemainingTime == localStorage.getItem("wiLength") && sessionStorage.getItem("currentIntervalType") == "work") || 
+			(currentIntervalRemainingTime == localStorage.getItem("riLength") && sessionStorage.getItem("currentIntervalType") == "rest") ){
+			console.log("GREEN");
+			intervalTimeRemainingText.style.color = "#fff";
+		}
+
+		//updating countdowns 
+		sessionStorage.setItem("currentWorkoutRemainingTime",timer);
+		var previousIntervalTimeLeft = parseInt(sessionStorage.getItem("currentIntervalRemainingTime"), 10);
+		var updatedIntervalTimeLeft = previousIntervalTimeLeft - 1;
+		sessionStorage.setItem("currentIntervalRemainingTime", updatedIntervalTimeLeft);
+
+		//edge case where either workout or rest interval is 0 seconds
+		if ((localStorage.getItem("wiLength") == "0") || (localStorage.getItem("riLength") == "0")){	
+			if (updatedIntervalTimeLeft == 0){
+				if (localStorage.getItem("wiLength") == "0"){
+					sessionStorage.setItem("currentIntervalRemainingTime", localStorage.getItem("riLength")); 
+				} else{
+					sessionStorage.setItem("currentIntervalRemainingTime", localStorage.getItem("wiLength")); 
+					sessionStorage.setItem("currentIntervalType", "work")
+				}
+			}
+		}
+		else{
+			// changing interval if necessary
+			if (sessionStorage.getItem("currentIntervalRemainingTime") == "0"){	
+				if (sessionStorage.getItem("currentIntervalType") === "rest") { 
+					sessionStorage.setItem("currentIntervalRemainingTime", localStorage.getItem("wiLength")); 
+					sessionStorage.setItem("currentIntervalType", "work")
+				} else{ 
+					sessionStorage.setItem("currentIntervalRemainingTime", localStorage.getItem("riLength")); 
+					sessionStorage.setItem("currentIntervalType", "rest")
+				}
+			}
+		}
+		if (--timer < 0) { // when time runs out, stop workout
+			//TODO maybe trigger the beep manually here, congrats yadda yadda
+			console.log("GREEN");
+			cleanUpWorkoutVariables();
+			ToggleStartStopWorkout();
         }
     }
 }
@@ -91,6 +157,9 @@ function startTimer(duration, display) {  //startTimer=run_clock TODO make this 
  *  wi_length, wi_bpm, ri_length, ri_bpm, tw_length are values from the user inputted fields in chooseWorkoutDiv
  */
 function startWorkout(){
+	//TODO all input fields should accept only positive  / 0 ints only (eg: 01 messes things up)?
+	console.log("Starting Workout");
+
 	var wi_length = document.getElementById("wi_length").value;
 	var wi_bpm = document.getElementById("wi_bpm").value;
 	var ri_length = document.getElementById("ri_length").value;
@@ -102,24 +171,26 @@ function startWorkout(){
 	localStorage.setItem("riLength", ri_length);
 	localStorage.setItem("riBPM", ri_bpm);
 	localStorage.setItem("twLength", tw_length);
+	//TODO fix bug: 01, decimals etc. makes things go wrong
 
 	//TODO fix bug:
 	//there's a race condition here - by the time getSongBPM() updates "currentSongOriginalBPM" in sessionStorage
 	//with the current song's BPM, sessionStorage.getItem("currentSongOriginalBPM") already is called
 	//with the previous song's BPM, setting the playback speed to the previous song's desired one
 	//instead of the current one's desired one
-
-	//TODO question:
-	// should the song currenty playing speed reset on page refresh or if you close out the tab without ending workout? right now, it's not
-	// potential solution: changeCurrentSongToSpeed(100) at the beginning as soon as speed-input-extension is created so that
-	// the song doesn't stay fast / slow.
 	
 	getSongBPM();
 	ToggleStartStopWorkout();
-	console.log("Starting Workout");
-	startTimer(tw_length * 60, document.getElementById("total_time_remaining")); //TODO add first 3 seconds
 
-	if (sessionStorage.getItem("currentSongOriginalBPM") !== null && sessionStorage.getItem("currentSongOriginalBPM") !== "0" && sessionStorage.getItem("currentSongOriginalBPM") !== undefined ){
+	// simulate a rest interval of 3 seconds so the user doesn't start the workout interval immediately
+	sessionStorage.setItem("currentIntervalType", "rest");
+	sessionStorage.setItem("currentIntervalRemainingTime", 3);
+	
+	var interval_length_with_three = tw_length * 60 + 3;
+
+	startTimer(interval_length_with_three); //TODO add first 3 seconds
+
+	if (sessionStorage.getItem("currentSongOriginalBPM") != null && sessionStorage.getItem("currentSongOriginalBPM") != "0" && sessionStorage.getItem("currentSongOriginalBPM") != undefined ){
 		//in case there is no current song playing or something goes wrong and currentSongOriginalBPM is never set, now speed stays at 100 instead of going to 0.
 		changeCurrentSongToSpeed(bpmToPercentageSpeed(wi_bpm)); 
 	}
@@ -144,10 +215,10 @@ function  playPause(){
 		window.sessionStorage.setItem("isWorkoutOngoing", false);
 		clearInterval(workoutTimer);
 
-	} else{ //workout / timercurrently paused
+	} else{ //workout / timer currently paused
 		window.sessionStorage.setItem("isWorkoutOngoing", true);
 		p.innerHTML = "Pause";
-		startTimer(window.sessionStorage.getItem("currentWorkoutRemainingTime"), document.getElementById("total_time_remaining"));
+		startTimer(parseInt(window.sessionStorage.getItem("currentWorkoutRemainingTime")-1), true);
 
 	}
 
@@ -158,11 +229,20 @@ function  playPause(){
  */
 function endWorkout(){
 	ToggleStartStopWorkout();
+	cleanUpWorkoutVariables();
+}
 
-	//cleaning up variables / state
-	clearInterval(workoutTimer);
+/**
+ * This should be called whenever you want all variables related to workout state to be restored to default
+ * eg: at the end of a workout, perhaps when the page is refreshed to ensure the song is at normal 100 speed
+ */
+function cleanUpWorkoutVariables(){
 	changeCurrentSongToSpeed(100);
-	console.log('endWorkout');
+	clearInterval(workoutTimer);
+	sessionStorage.removeItem("currentIntervalType");
+	sessionStorage.removeItem("currentIntervalRemainingTime");
+	sessionStorage.removeItem("currentWorkoutRemainingTime");
+	sessionStorage.removeItem("isWorkoutOngoing");
 }
 
 /** ============================================================================================================*/
@@ -219,7 +299,8 @@ function ToggleStartStopWorkout() {
 /** ============================================================================================================*/
 function loadButtons (evt) {
     var jsInitChecktimer = setInterval (add_Hiitify_Button, 111);
-    var jsInitChecktimer1 = setInterval (add_Auth_Button, 111);
+	var jsInitChecktimer1 = setInterval (add_Auth_Button, 111);
+	// var jsInitChecktimer2 = setInterval (reset_Speed, 111);
 
     //loading the hiitify button when things load
     function add_Hiitify_Button () {
@@ -231,15 +312,24 @@ function loadButtons (evt) {
         }
 	}
 
-        //loading the auth button when things load
-        function add_Auth_Button () {
-          if ( document.getElementsByClassName('now-playing-bar__left').length > 0) {
-              clearInterval (jsInitChecktimer1);
-  
-              var auth_button = makeAuthButton()
-              document.getElementsByClassName('now-playing-bar__left')[0].appendChild (auth_button);
-        }
-    }
+	//loading the auth button when things load
+	function add_Auth_Button () {
+		if ( document.getElementsByClassName('now-playing-bar__left').length > 0) {
+			clearInterval (jsInitChecktimer1);
+
+			var auth_button = makeAuthButton()
+			document.getElementsByClassName('now-playing-bar__left')[0].appendChild (auth_button);
+		}	
+	}
+		
+	// // TODO this doesn't work (I think it's calling speed-extension-input and trying to use speed-extension-input's changeSpeed event before it is attached to speed-extension-input :()
+	// // it's supposed to set the speed back to normal as soon as the page is refreshed / loaded 
+	// function reset_Speed () {
+	// 	if ( document.getElementById('speed-extension-input') != null) {
+	// 		clearInterval (jsInitChecktimer2);
+	// 		changeCurrentSongToSpeed(100);			
+	// 	}
+    // }
 }
 
 /**
@@ -412,14 +502,12 @@ function makeWorkoutDiv(){
 
 			//B2. interval time remaining
 			var interval_time_remaining = document.createElement('H1');
-			interval_time_remaining.innerHTML = "24";
 			interval_time_remaining.id = "interval_time_remaining";
 			interval_time_remaining.style.display = "none"
 			chooseWorkoutDiv.appendChild(interval_time_remaining);
 
 			//B3. interval type
 			var interval_type_label = document.createElement('H2');
-			interval_type_label.innerHTML = "Workout!"; //TODO replace dynamically
 			interval_type_label.id = "interval_type_label";
 			interval_type_label.style.display = "none";
 			chooseWorkoutDiv.appendChild(interval_type_label);
