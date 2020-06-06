@@ -244,6 +244,13 @@ function resetSpeed(){
 	changeCurrentSongToSpeed(100);
 }
 
+/**
+ * sets the current song's speed to be what it should be given the inputted BPM for the current interval
+ */
+function hiitifySpeed(){
+	//TODO implement
+}
+
 function getAndUpdateBPM(new_bpm) {
 	getSongBPM().then((sondBPM) => {
 		updateBPM(new_bpm)
@@ -327,7 +334,7 @@ function ToggleStartStopWorkout() {
 	var settingsElements = ["workout_title", "wi_length_label", "wi_length", "wi_bpm_label", "wi_bpm", 
 		"ri_length_label", "ri_length", "ri_bpm_label", "ri_bpm", "tw_length_label", "tw_length", "start_button","cancel_button",
 		 "br1", "br2", "br3", "br4", "br5", "br6", "br7", "br8", "br9", "br10"];
-	var workoutElements = ["hiitify_title","total_time_remaining","interval_time_remaining","interval_type_label",
+	var workoutElements = ["hiitify_title","total_time_remaining","interval_time_remaining","interval_type_label","hittify_speed_button",
 	"reset_speed_button","play_pause_button","end_workout_button", "speed-extension-input", "speed_percentage_label", "bpm_text_label"];
 
 	for (i = 0; i < settingsElements.length; i++){
@@ -591,8 +598,16 @@ function makeWorkoutDiv(){
 			interval_type_label.id = "interval_type_label";
 			interval_type_label.style.display = "none";
 			chooseWorkoutDiv.appendChild(interval_type_label);
-			
-			//B4. reset speed button
+
+			//B4. hiitify speed button
+			var hittify_speed_button = document.createElement('button');
+			hittify_speed_button.innerHTML = 'HIITify Speed';
+			hittify_speed_button.id = 'hittify_speed_button';
+			hittify_speed_button.addEventListener("click", hiitifySpeed);
+			hittify_speed_button.style.display = "none";
+			chooseWorkoutDiv.appendChild(hittify_speed_button);
+
+			//B5. reset speed button
 			var reset_speed_button = document.createElement('button');
 			reset_speed_button.innerHTML = 'Reset Speed';
 			reset_speed_button.id = 'reset_speed_button';
@@ -600,7 +615,7 @@ function makeWorkoutDiv(){
 			reset_speed_button.style.display = "none";
 			chooseWorkoutDiv.appendChild(reset_speed_button);
 
-			//B5. play pause button
+			//B6. play pause button
 			var play_pause_button = document.createElement('button');
 			play_pause_button.innerHTML = 'Pause'; //TODO try to instead get it to look like spotify play pause
 			play_pause_button.id = 'play_pause_button';
@@ -608,7 +623,7 @@ function makeWorkoutDiv(){
 			play_pause_button.style.display = "none";
 			chooseWorkoutDiv.appendChild(play_pause_button);
 
-			//B6. stop button
+			//B7. stop button
 			var end_workout_button = document.createElement('button');
 			end_workout_button.innerHTML = 'End Workout';
 			end_workout_button.id = 'end_workout_button';
@@ -616,14 +631,14 @@ function makeWorkoutDiv(){
 			end_workout_button.style.display = "none";
 			chooseWorkoutDiv.appendChild(end_workout_button);
 
-			//B7. bpm text
+			//B8. bpm text
 			var bpm_text_label = document.createElement('p');
 			bpm_text_label.id = "bpm_text_label";
 			bpm_text_label.innerHTML = "_ x";
 			bpm_text_label.style.display = "none";
 			chooseWorkoutDiv.appendChild(bpm_text_label);
 
-			//B8. speed percentage text
+			//B9. speed percentage text
 			var speed_percentage_label = document.createElement('p');
 			speed_percentage_label.id = "speed_percentage_label";
 			speed_percentage_label.innerHTML = "_ BPM";
