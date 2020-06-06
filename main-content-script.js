@@ -35,6 +35,7 @@ var workoutTimer;
  * @param bpm 
  */
 function bpmToPercentageSpeed(bpm){
+	console.log(100 * bpm / sessionStorage.getItem("currentSongOriginalBPM") + "Bpmtospeed");
 	return 100 * bpm / sessionStorage.getItem("currentSongOriginalBPM");
 }
 
@@ -43,6 +44,7 @@ function bpmToPercentageSpeed(bpm){
  * @param bpm 
  */
 function percentageSpeedToBPM(speed){
+	console.log(speed * sessionStorage.getItem("currentSongOriginalBPM") / 100 + "percentagespeedtobpm");
 	return speed * sessionStorage.getItem("currentSongOriginalBPM") / 100;
 }
 
@@ -51,8 +53,17 @@ function percentageSpeedToBPM(speed){
  * @param speedPercentage: 100 for normal speed, < 100 for slower, >100 for faster 
  */
 function changeCurrentSongToSpeed(speedPercentage){ 
+	console.log("change currents ong to speed" + speedPercentage);
 	var speed_button = document.getElementById("speed-extension-input");
 	speed_button.value = speedPercentage.toString();
+
+	// TODO change if speedPercentage > 200 (the hardcoded upper limit on the slider), set the progress bar to have a max of speedPercentage and make that the current BPM
+	if (speedPercentage > 200){
+		speed_button.max = speedPercentage;
+		speed_button.value = speedPercentage;
+	}else{
+		speed_button.max = "200";
+	}
 
 	//manually updates (changing speed-extension-input's value via js doesn't trigger its onput automatically)
 	var setSpeedEvent = new Event ('changeSpeed'); 
@@ -422,7 +433,7 @@ function updateTextCurrentSpeed(event) {
 	var x = document.getElementById("speed-extension-input");
 	s.innerHTML = parseInt(x.value) / 100 + "x speed";
 	var b = document.getElementById("bpm_text_label");
-	b.innerHTML = Math.round(percentageSpeedToBPM(parseInt(x.value))) + " BPM";
+	b.innerHTML = parseInt(percentageSpeedToBPM(x.value)) + " BPM";
 }
   
 /**

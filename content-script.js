@@ -46,7 +46,7 @@ var code = `
 		/* Building our playback speed input element */
 		var input = document.createElement('input');
 		input.type = 'range';
-		input.min = '7';
+		input.min = '50';
 		input.max = '200';
 		input.id = 'speed-extension-input';
 		input.style = 'background-color: #08080859;'
