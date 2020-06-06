@@ -398,8 +398,9 @@ function loadButtons (evt) {
 			clearInterval (jsInitChecktimer2);
 			var speed_extension_input = document.getElementById('speed-extension-input');
 			speed_extension_input.oninput = updateTextCurrentSpeed;
-			//todo see if this works
 			speed_extension_input.style.width = '100%';
+			// makeWorkoutDiv();
+			// dragElement(document.getElementById("chooseWorkoutDiv"));
 			
 		}
     }
@@ -410,7 +411,8 @@ function loadButtons (evt) {
  */
 function makeHittifyButton(){
     var b = document.createElement('button');
-    b.innerHTML = 'HIITify!';
+	b.innerHTML = 'HIITify!';
+	b.className = "btn-outline green";
 	b.addEventListener("click", ToggleWorkoutDiv);
     return b;
 }
@@ -420,6 +422,7 @@ function makeAuthButton(){
   var b = document.createElement("button");
   b.id =  "authBtn";
   b.innerHTML = 'Auth Button';
+  b.className = "btn-green";
   b.addEventListener("click", handler);
   return b;
 }
@@ -601,7 +604,7 @@ function makeWorkoutDiv(){
 			//B9. beep toggle label
 			var beep_switch_label = document.createElement("label");
 			beep_switch_label.id = "beep_switch_label";
-			beep_switch_label.innerHTML = "Beeping"
+			beep_switch_label.innerHTML = "Sound Effects:"
 			beep_wrapper.appendChild(beep_switch_label);
 			//B10. beep toggle switch
 			var beep_switch_label = document.createElement("label");
@@ -643,6 +646,7 @@ function makeWorkoutDiv(){
 			//B4. hiitify speed button
 			var hittify_speed_button = document.createElement('button');
 			hittify_speed_button.innerHTML = 'HIITify Speed';
+			hittify_speed_button.className = "btn-outline gray"; 
 			hittify_speed_button.id = 'hittify_speed_button';
 			hittify_speed_button.addEventListener("click", hiitifySpeed);
 			hittify_speed_button.style.display = "none";
@@ -650,6 +654,7 @@ function makeWorkoutDiv(){
 			//B5. reset speed button
 			var reset_speed_button = document.createElement('button');
 			reset_speed_button.innerHTML = 'Reset Speed';
+			reset_speed_button.className = "btn-outline gray"; 
 			reset_speed_button.id = 'reset_speed_button';
 			reset_speed_button.addEventListener("click", resetSpeed);
 			reset_speed_button.style.display = "none";
@@ -667,14 +672,17 @@ function makeWorkoutDiv(){
 			chooseWorkoutDiv.append(start_cancel_wrapper);
 			var start_button = document.createElement("button");
 			start_button.innerHTML = "Start!";
+			start_button.className = "btn-green";
 			start_button.id = "start_button";
 			start_cancel_wrapper.appendChild(start_button); 
 			start_button.addEventListener("click", startWorkout);
 			var cancel_button = document.createElement("button");
 			cancel_button.innerHTML = "cancel";
+			cancel_button.className = "btn-outline cancel"; 
 			cancel_button.id = "cancel_button";
 			start_cancel_wrapper.appendChild(cancel_button); 
 			cancel_button.addEventListener("click", ToggleWorkoutDiv);
+
 
 
 

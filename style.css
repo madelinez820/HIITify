@@ -37,11 +37,13 @@
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
+  /* background-color: #2196F3; */
+  background-color: rgba(147, 236, 181, 0.877);
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  /* box-shadow: 0 0 1px #2196F3; */
+  box-shadow: 0 0 1px rgba(147, 236, 181, 0.877);
 }
 
 input:checked + .slider:before {
@@ -110,3 +112,67 @@ input:checked + .slider:before {
     height: 34px;
     line-height: 34px;
 }
+
+/* =============button css =====================*/
+.btn-outline {
+    border: 2px solid black;
+    background-color: white;
+    color: black;
+    padding: 14px 28px;
+    border-radius: 25px;
+    cursor: pointer;
+  }
+  /* Red */
+  /* .red {
+    border-color: #f44336;
+    color: red;
+  }
+  .red:hover {
+    background: #f44336;
+    transform: scale(1.05) perspective(1px);
+    color: white;
+  } */
+  /* Gray - for part of other button css*/
+  .gray {
+    border-color: #e7e7e7;
+    color: black;
+  }
+  .gray:hover {
+    background: #e7e7e7;
+    transform: scale(1.05) perspective(1px)
+  }
+   /* for part of cancel button css */
+   .cancel {
+    border-color: #e7e7e7;
+    color: black;
+  }
+  .cancel:hover {
+    background: #e7e7e7;
+    transform: scale(1.05) perspective(1px)
+  }
+  /*Green - for start buttons */
+  .btn-green {
+    border: 2px solid black; 
+    background-color:rgb(29, 185, 91);
+    color: white;
+    padding: 14px 28px;
+    border-radius: 25px;
+    cursor: pointer;
+    border-color: rgb(29, 185, 91);
+  }
+  .btn-green:hover{
+    background-color: green;
+    transform: scale(1.05) perspective(1px);
+    border-color: green;
+  }
+
+  .green {
+    border-color: #4CAF50;
+    color: green;
+  }
+  .green:hover {
+    background-color: #4CAF50;
+    color: white;
+    transform: scale(1.05) perspective(1px)
+  }
+/* =========================================*/
