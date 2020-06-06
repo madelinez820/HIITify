@@ -37,6 +37,15 @@ var workoutTimer;
 function bpmToPercentageSpeed(bpm){
 	return 100 * bpm / sessionStorage.getItem("currentSongOriginalBPM");
 }
+
+/**
+ * Given a speed (100 is normal, <100 is slower, >100 is fast), it calculates the BPM using the song's stored original BPM
+ * @param bpm 
+ */
+function percentageSpeedToBPM(speed){
+	return speed * sessionStorage.getItem("currentSongOriginalBPM") / 100;
+}
+
 /**
  * changes the currently playing song to the specified BPM
  * @param speedPercentage: 100 for normal speed, < 100 for slower, >100 for faster 
@@ -44,8 +53,13 @@ function bpmToPercentageSpeed(bpm){
 function changeCurrentSongToSpeed(speedPercentage){ 
 	var speed_button = document.getElementById("speed-extension-input");
 	speed_button.value = speedPercentage.toString();
-	var setSpeedEvent = new Event ('changeSpeed');
+
+	//manually updates (changing speed-extension-input's value via js doesn't trigger its onput automatically)
+	var setSpeedEvent = new Event ('changeSpeed'); 
 	speed_button.dispatchEvent(setSpeedEvent);
+	var setTextEvent =  new Event ('input'); //speed-extension-input's input event is set to updateTextCurrentSpeed
+	speed_button.dispatchEvent(setTextEvent);
+	
 }
 
 /** ============================================================================================================*/
@@ -230,7 +244,6 @@ function startWorkout(){
  */
 function  resetSpeed(){
 	changeCurrentSongToSpeed(100);
-	console.log('resetSpeed');
 }
 
 /**
@@ -298,7 +311,8 @@ function ToggleStartStopWorkout() {
 		"ri_length_label", "ri_length", "ri_bpm_label", "ri_bpm", "tw_length_label", "tw_length", "start_button","cancel_button",
 		 "br1", "br2", "br3", "br4", "br5", "br6", "br7", "br8", "br9", "br10"];
 	var workoutElements = ["hiitify_title","total_time_remaining","interval_time_remaining","interval_type_label",
-	"reset_speed_button","play_pause_button","end_workout_button", "speed-extension-input"];
+	"reset_speed_button","play_pause_button","end_workout_button", "speed-extension-input", "speed_percentage_label", "bpm_text_label"];
+
 	for (i = 0; i < settingsElements.length; i++){
 		var x = document.getElementById(settingsElements[i]);
 		if (x.style.display === "none"){
@@ -328,7 +342,7 @@ function ToggleStartStopWorkout() {
 function loadButtons (evt) {
     var jsInitChecktimer = setInterval (add_Hiitify_Button, 111);
 	var jsInitChecktimer1 = setInterval (add_Auth_Button, 111);
-	// var jsInitChecktimer2 = setInterval (reset_Speed, 111);
+	var jsInitChecktimer2 = setInterval (add_Update_Speed_Text_Listener, 111);
 
     //loading the hiitify button when things load
     function add_Hiitify_Button () {
@@ -350,14 +364,15 @@ function loadButtons (evt) {
 		}	
 	}
 		
-	// // TODO this doesn't work (I think it's calling speed-extension-input and trying to use speed-extension-input's changeSpeed event before it is attached to speed-extension-input :()
-	// // it's supposed to set the speed back to normal as soon as the page is refreshed / loaded 
-	// function reset_Speed () {
-	// 	if ( document.getElementById('speed-extension-input') != null) {
-	// 		clearInterval (jsInitChecktimer2);
-	// 		changeCurrentSongToSpeed(100);			
-	// 	}
-    // }
+	// TODO 
+	function add_Update_Speed_Text_Listener () {
+		if ( document.getElementById('speed-extension-input') != null) {
+			clearInterval (jsInitChecktimer2);
+			var speed_extension_input = document.getElementById('speed-extension-input');
+			speed_extension_input.oninput = updateTextCurrentSpeed;
+			
+		}
+    }
 }
 
 /**
@@ -392,6 +407,18 @@ function OnlyNums (event){
 	return(event.charCode == 8 || event.charCode == 0 || event.charCode == 13) ? null : event.charCode >= 48 && event.charCode <= 57;
 }
 
+/**
+ * Updates the speed percentage text and the BPM text to match the current speed when the speed is changed
+ * @param event 
+ */
+function updateTextCurrentSpeed(event) {
+	var s = document.getElementById("speed_percentage_label");
+	var x = document.getElementById("speed-extension-input");
+	s.innerHTML = parseInt(x.value) / 100 + "x speed";
+	var b = document.getElementById("bpm_text_label");
+	b.innerHTML = Math.round(percentageSpeedToBPM(parseInt(x.value))) + " BPM";
+}
+  
 /**
  * Creates the chooseWorkoutDiv
  */
@@ -571,6 +598,20 @@ function makeWorkoutDiv(){
 			end_workout_button.addEventListener("click", endWorkout);
 			end_workout_button.style.display = "none";
 			chooseWorkoutDiv.appendChild(end_workout_button);
+
+			//B7. bpm text
+			var bpm_text_label = document.createElement('p');
+			bpm_text_label.id = "bpm_text_label";
+			bpm_text_label.innerHTML = "_ x";
+			bpm_text_label.style.display = "none";
+			chooseWorkoutDiv.appendChild(bpm_text_label);
+
+			//B8. speed percentage text
+			var speed_percentage_label = document.createElement('p');
+			speed_percentage_label.id = "speed_percentage_label";
+			speed_percentage_label.innerHTML = "_ BPM";
+			speed_percentage_label.style.display = "none";
+			chooseWorkoutDiv.appendChild(speed_percentage_label);
 
 
       document.body.appendChild(chooseWorkoutDiv);
