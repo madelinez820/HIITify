@@ -34,7 +34,7 @@ var workoutTimer;
  * @param bpm 
  */
 function bpmToPercentageSpeed(bpm){
-	console.log(100 * bpm / sessionStorage.getItem("currentSongOriginalBPM") + "Bpmtospeed");
+	// console.log(100 * bpm / sessionStorage.getItem("currentSongOriginalBPM") + "Bpmtospeed");
 	return 100 * bpm / sessionStorage.getItem("currentSongOriginalBPM");
 }
 
@@ -43,7 +43,7 @@ function bpmToPercentageSpeed(bpm){
  * @param bpm 
  */
 function percentageSpeedToBPM(speed){
-	console.log(speed * sessionStorage.getItem("currentSongOriginalBPM") / 100 + "percentagespeedtobpm");
+	// console.log(speed * sessionStorage.getItem("currentSongOriginalBPM") / 100 + "percentagespeedtobpm");
 	return speed * sessionStorage.getItem("currentSongOriginalBPM") / 100;
 }
 
@@ -126,11 +126,11 @@ function startTimer(duration, fromPause) {
 		// changes the interval time remaining display and interval label text
 		var currentIntervalRemainingTime =  sessionStorage.getItem("currentIntervalRemainingTime");
 		intervalTimeRemainingText.innerHTML = currentIntervalRemainingTime;
-		intervalTypeText.innerHTML = (sessionStorage.getItem("currentIntervalType") == "work" ) ? "WORK!": "REST";
+		intervalTypeText.innerHTML = (sessionStorage.getItem("currentIntervalType") == "work" ) ? "WORKOUT!": "REST";
 
 		//add audio and visual cues to signal last 3 seconds / start of an interval
 		intervalTypeText.style.color = (sessionStorage.getItem("currentIntervalType") == "work" ) ? "#39ff14": "#ff0000"; //neon green if work interval, neon red if rest interval
-		if (timer <= 3){ //red on last 5 seconds of the workout
+		if (timer <= 3 && timer > 0){ //red on last 3 seconds of the workout
 			display_total_time.style.color = "#ff0000"; // neon red 
 			beep("last");
 		}
@@ -336,13 +336,13 @@ function ToggleStartStopWorkout() {
 		"ri_length_label", "ri_length", "ri_bpm_label", "ri_bpm", "tw_length_label", "tw_length", "start_button","cancel_button",
 		 "br1", "br2", "br3", "br4", "br5", "br6", "br7", "br8", "br9", "br10"];
 	var workoutElements = ["hiitify_title","total_time_remaining","interval_time_remaining","interval_type_label","hittify_speed_button",
-	"reset_speed_button","play_pause_button","end_workout_button", "speed-extension-input", "speed_percentage_label", "bpm_text_label"];
+	"reset_speed_button","play_pause_button","end_workout_button", "speed-extension-input", "speed_text_label"];
 
 	for (i = 0; i < settingsElements.length; i++){
 		var x = document.getElementById(settingsElements[i]);
 		if (x.style.display === "none"){
 			if (x.nodeName == "BUTTON"){ // default styling for buttons isn't block apparently
-				x.style.display = "";
+				x.style.display = "inline";
 			}
 			else if (x.nodeName != "BR"){ // super jank but apparently <br>s shouldn't be displayed again after they are shown once or else they create extra unwanted space
 				x.style.display = "block";
@@ -355,7 +355,11 @@ function ToggleStartStopWorkout() {
 	for (i = 0; i < workoutElements.length; i++){
 		var x = document.getElementById(workoutElements[i]);
 		if (x.style.display === "none") {
-			x.style.display = "block";
+			// if (x.nodeName == "BUTTON"){ // default styling for buttons isn't block apparently
+			// 	x.style.display = "inline";
+			// }else{
+				x.style.display = "block";
+			// }
 		  } else {
 			x.style.display = "none";
 		}
@@ -394,6 +398,8 @@ function loadButtons (evt) {
 			clearInterval (jsInitChecktimer2);
 			var speed_extension_input = document.getElementById('speed-extension-input');
 			speed_extension_input.oninput = updateTextCurrentSpeed;
+			//todo see if this works
+			speed_extension_input.style.width = '100%';
 			
 		}
     }
@@ -436,11 +442,9 @@ function OnlyNums (event){
  * @param event 
  */
 function updateTextCurrentSpeed(event) {
-	var s = document.getElementById("speed_percentage_label");
 	var x = document.getElementById("speed-extension-input");
-	s.innerHTML = parseInt(x.value) / 100 + "x speed";
-	var b = document.getElementById("bpm_text_label");
-	b.innerHTML = parseInt(percentageSpeedToBPM(x.value)) + " BPM";
+	var s= document.getElementById("speed_text_label");
+	s.innerHTML = parseInt(percentageSpeedToBPM(x.value)) + " BPM | " + parseInt(x.value) / 100 + "x speed";
 }
   
 /**
@@ -463,6 +467,7 @@ function makeWorkoutDiv(){
 			// A0. workout div's title
 			var title = document.createElement('H2');
 			title.innerHTML = "Choose Your Workout";
+			title.className = "_2e77de28f0b30f1b6e8d479009f45e0e-scss hiitify_title";
 			title.id="workout_title";
 			chooseWorkoutDiv.appendChild(title)
 			
@@ -576,6 +581,7 @@ function makeWorkoutDiv(){
 
 			// B0. workout div's title
 			var hiitify_title = document.createElement('H2');
+			hiitify_title.className = "_2e77de28f0b30f1b6e8d479009f45e0e-scss hiitify_title"
 			hiitify_title.innerHTML = "HIITify";
 			hiitify_title.id="hiitify_title";
 			hiitify_title.style.display = "none";
@@ -588,7 +594,7 @@ function makeWorkoutDiv(){
 			chooseWorkoutDiv.appendChild(total_time_remaining);
 
 			//B2. interval time remaining
-			var interval_time_remaining = document.createElement('H1');
+			var interval_time_remaining = document.createElement('div');
 			interval_time_remaining.id = "interval_time_remaining";
 			interval_time_remaining.style.display = "none"
 			chooseWorkoutDiv.appendChild(interval_time_remaining);
@@ -598,6 +604,9 @@ function makeWorkoutDiv(){
 			interval_type_label.id = "interval_type_label";
 			interval_type_label.style.display = "none";
 			chooseWorkoutDiv.appendChild(interval_type_label);
+
+			// wrapper div for hittify speed button and reset speed button
+			var speed_div = document.getElementById("div"); //TODO create wrapper div
 
 			//B4. hiitify speed button
 			var hittify_speed_button = document.createElement('button');
@@ -618,6 +627,7 @@ function makeWorkoutDiv(){
 			//B6. play pause button
 			var play_pause_button = document.createElement('button');
 			play_pause_button.innerHTML = 'Pause'; //TODO try to instead get it to look like spotify play pause
+			play_pause_button.className = "_11f5fc88e3dec7bfec55f7f49d581d78-scss";//TODO need to do the icon and tooltip thing
 			play_pause_button.id = 'play_pause_button';
 			play_pause_button.addEventListener("click", playPause);
 			play_pause_button.style.display = "none";
@@ -631,37 +641,35 @@ function makeWorkoutDiv(){
 			end_workout_button.style.display = "none";
 			chooseWorkoutDiv.appendChild(end_workout_button);
 
-			//B8. bpm text
-			var bpm_text_label = document.createElement('p');
-			bpm_text_label.id = "bpm_text_label";
-			bpm_text_label.innerHTML = "_ x";
-			bpm_text_label.style.display = "none";
-			chooseWorkoutDiv.appendChild(bpm_text_label);
-
-			//B9. speed percentage text
-			var speed_percentage_label = document.createElement('p');
-			speed_percentage_label.id = "speed_percentage_label";
-			speed_percentage_label.innerHTML = "_ BPM";
-			speed_percentage_label.style.display = "none";
-			chooseWorkoutDiv.appendChild(speed_percentage_label);
-
 			//B10. beep toggle switch
 			var beep_switch_label = document.createElement("label");
-			beep_switch_label.className ="switch";
+			beep_switch_label.className ="switch beep_toggle";
 			var beep_switch_input = document.createElement("input");
 			beep_switch_input.id = "beep_switch_input";
+			beep_switch_input.classname = " beep_toggle"
 			beep_switch_input.checked = "true";
 			beep_switch_label.appendChild(beep_switch_input);
 			beep_switch_input.type = "checkbox";
 			var beep_switch_span = document.createElement("span");
 			beep_switch_label.appendChild(beep_switch_span);
-			beep_switch_span.className ="slider round";
+			beep_switch_span.className ="slider round beep_toggle";
 			chooseWorkoutDiv.appendChild(beep_switch_label);
-			//make it start checked
 
-//   <input type="checkbox" checked>
-//   <span class="slider round"></span>
-// </label>
+			//B8. bpm and speed percentage text
+			var speed_text_label = document.createElement('p');
+			speed_text_label.id = "speed_text_label";
+			speed_text_label.innerHTML = "BPM | 1x speed";
+			speed_text_label.style.display = "none";
+			chooseWorkoutDiv.appendChild(speed_text_label);
+
+			//B9. speed percentage text
+			// var speed_percentage_label = document.createElement('p');
+			// speed_percentage_label.id = "speed_percentage_label";
+			// speed_percentage_label.innerHTML = "BPM";
+			// speed_percentage_label.style.display = "none";
+			// chooseWorkoutDiv.appendChild(speed_percentage_label);
+
+
 
 
       document.body.appendChild(chooseWorkoutDiv);
@@ -796,7 +804,7 @@ function dragElement(elmnt) {
   function dragMouseDown(e) {
 	//NOTE: do this for other elements we add that you don't want draggable
 	//no dragging in input fields or buttons (or else you can't type anything or release buttons without clicking it), 
-	if ((e.target.tagName === "INPUT") || (e.target.tagName === "BUTTON")){ 
+	if ((e.target.tagName === "INPUT") || (e.target.tagName === "BUTTON") || (e.target.className.includes("beep_toggle"))){ 
 		return;
 	}
     e = e || window.event;

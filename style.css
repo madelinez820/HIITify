@@ -1,3 +1,4 @@
+/*======for toggle switch button =====*/
 .switch {
   position: relative;
   display: inline-block;
@@ -56,4 +57,45 @@ input:checked + .slider:before {
   
   .slider.round:before {
     border-radius: 50%;
+}
+/*========================*/
+.hiitify_title {
+    color: white;
+}
+
+#wi_length {
+    text-align:center;
+}
+#wi_bpm{
+    text-align:center;
+}
+#ri_length{
+    text-align:center;
+}
+#ri_bpm{
+    text-align:center;
+}
+#tw_length{
+    text-align:center;
+}
+
+#interval_time_remaining{
+    font-size: 200px; 
+    height: 200px;
+    line-height: 200px;
+}
+#total_time_remaining{
+    padding: 10px;
+    font-size: 25px; 
+    height: 25px;
+    line-height: 25px;
+}
+#chooseWorkoutDiv{
+    min-width: 300px;
+    box-shadow: 0 4px 8px 0 rgba(216, 213, 213, 0.192), 0 6px 20px 0 rgba(216, 213, 213, 0.445);
+
+    /* used to help stretch speed slider to full width */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; 
 }
