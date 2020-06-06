@@ -355,11 +355,11 @@ function ToggleStartStopWorkout() {
 	for (i = 0; i < workoutElements.length; i++){
 		var x = document.getElementById(workoutElements[i]);
 		if (x.style.display === "none") {
-			// if (x.nodeName == "BUTTON"){ // default styling for buttons isn't block apparently
-			// 	x.style.display = "inline";
-			// }else{
+			if (x.nodeName == "BUTTON"){ // default styling for buttons isn't block apparently
+				x.style.display = "inline";
+			}else{
 				x.style.display = "block";
-			// }
+			}
 		  } else {
 			x.style.display = "none";
 		}
@@ -566,18 +566,6 @@ function makeWorkoutDiv(){
 			var br10 = document.createElement('br');
 			br10.id ="br10";
 			chooseWorkoutDiv.appendChild(br10);
-			
-			// A6. Workout Start Button and cancel button
-			var start_button = document.createElement("button");
-			start_button.innerHTML = "Start!";
-			start_button.id = "start_button";
-			chooseWorkoutDiv.appendChild(start_button); 
-			start_button.addEventListener("click", startWorkout);
-			var cancel_button = document.createElement("button");
-			cancel_button.innerHTML = "cancel";
-			cancel_button.id = "cancel_button";
-			chooseWorkoutDiv.appendChild(cancel_button); 
-			cancel_button.addEventListener("click", ToggleWorkoutDiv);
 
 			// B0. workout div's title
 			var hiitify_title = document.createElement('H2');
@@ -605,42 +593,16 @@ function makeWorkoutDiv(){
 			interval_type_label.style.display = "none";
 			chooseWorkoutDiv.appendChild(interval_type_label);
 
-			// wrapper div for hittify speed button and reset speed button
-			var speed_div = document.getElementById("div"); //TODO create wrapper div
-
-			//B4. hiitify speed button
-			var hittify_speed_button = document.createElement('button');
-			hittify_speed_button.innerHTML = 'HIITify Speed';
-			hittify_speed_button.id = 'hittify_speed_button';
-			hittify_speed_button.addEventListener("click", hiitifySpeed);
-			hittify_speed_button.style.display = "none";
-			chooseWorkoutDiv.appendChild(hittify_speed_button);
-
-			//B5. reset speed button
-			var reset_speed_button = document.createElement('button');
-			reset_speed_button.innerHTML = 'Reset Speed';
-			reset_speed_button.id = 'reset_speed_button';
-			reset_speed_button.addEventListener("click", resetSpeed);
-			reset_speed_button.style.display = "none";
-			chooseWorkoutDiv.appendChild(reset_speed_button);
-
-			//B6. play pause button
-			var play_pause_button = document.createElement('button');
-			play_pause_button.innerHTML = 'Pause'; //TODO try to instead get it to look like spotify play pause
-			play_pause_button.className = "_11f5fc88e3dec7bfec55f7f49d581d78-scss";//TODO need to do the icon and tooltip thing
-			play_pause_button.id = 'play_pause_button';
-			play_pause_button.addEventListener("click", playPause);
-			play_pause_button.style.display = "none";
-			chooseWorkoutDiv.appendChild(play_pause_button);
-
-			//B7. stop button
-			var end_workout_button = document.createElement('button');
-			end_workout_button.innerHTML = 'End Workout';
-			end_workout_button.id = 'end_workout_button';
-			end_workout_button.addEventListener("click", endWorkout);
-			end_workout_button.style.display = "none";
-			chooseWorkoutDiv.appendChild(end_workout_button);
-
+			//wrapper div for toggle switch and label
+			var beep_wrapper = document.createElement("div");
+			beep_wrapper.id = "beep_wrapper";
+			beep_wrapper.textAlign = "center";
+			chooseWorkoutDiv.appendChild(beep_wrapper);
+			//B9. beep toggle label
+			var beep_switch_label = document.createElement("label");
+			beep_switch_label.id = "beep_switch_label";
+			beep_switch_label.innerHTML = "Beeping"
+			beep_wrapper.appendChild(beep_switch_label);
 			//B10. beep toggle switch
 			var beep_switch_label = document.createElement("label");
 			beep_switch_label.className ="switch beep_toggle";
@@ -653,7 +615,45 @@ function makeWorkoutDiv(){
 			var beep_switch_span = document.createElement("span");
 			beep_switch_label.appendChild(beep_switch_span);
 			beep_switch_span.className ="slider round beep_toggle";
-			chooseWorkoutDiv.appendChild(beep_switch_label);
+			beep_wrapper.appendChild(beep_switch_label);
+
+			//wrapper div for play/pause and stop buttons
+			var play_pause_stop_wrapper = document.createElement("div");
+			chooseWorkoutDiv.appendChild(play_pause_stop_wrapper);
+			//B6. play pause button
+			var play_pause_button = document.createElement('button');
+			play_pause_button.innerHTML = 'Pause'; //TODO try to instead get it to look like spotify play pause
+			play_pause_button.className = "_11f5fc88e3dec7bfec55f7f49d581d78-scss";//TODO need to do the icon and tooltip thing
+			play_pause_button.id = 'play_pause_button';
+			play_pause_button.addEventListener("click", playPause);
+			play_pause_button.style.display = "none";
+			play_pause_stop_wrapper.appendChild(play_pause_button);
+
+			//B7. stop button
+			var end_workout_button = document.createElement('button');
+			end_workout_button.innerHTML = 'End Workout';
+			end_workout_button.id = 'end_workout_button';
+			end_workout_button.addEventListener("click", endWorkout);
+			end_workout_button.style.display = "none";
+			play_pause_stop_wrapper.appendChild(end_workout_button);
+
+			// wrapper div for hittify speed button and reset speed button
+			var speed_wrapper = document.createElement("div");
+			chooseWorkoutDiv.appendChild(speed_wrapper)
+			//B4. hiitify speed button
+			var hittify_speed_button = document.createElement('button');
+			hittify_speed_button.innerHTML = 'HIITify Speed';
+			hittify_speed_button.id = 'hittify_speed_button';
+			hittify_speed_button.addEventListener("click", hiitifySpeed);
+			hittify_speed_button.style.display = "none";
+			speed_wrapper.appendChild(hittify_speed_button);
+			//B5. reset speed button
+			var reset_speed_button = document.createElement('button');
+			reset_speed_button.innerHTML = 'Reset Speed';
+			reset_speed_button.id = 'reset_speed_button';
+			reset_speed_button.addEventListener("click", resetSpeed);
+			reset_speed_button.style.display = "none";
+			speed_wrapper.appendChild(reset_speed_button);
 
 			//B8. bpm and speed percentage text
 			var speed_text_label = document.createElement('p');
@@ -662,12 +662,19 @@ function makeWorkoutDiv(){
 			speed_text_label.style.display = "none";
 			chooseWorkoutDiv.appendChild(speed_text_label);
 
-			//B9. speed percentage text
-			// var speed_percentage_label = document.createElement('p');
-			// speed_percentage_label.id = "speed_percentage_label";
-			// speed_percentage_label.innerHTML = "BPM";
-			// speed_percentage_label.style.display = "none";
-			// chooseWorkoutDiv.appendChild(speed_percentage_label);
+			// A6. wrapper div for Workout Start Button and cancel button
+			var start_cancel_wrapper = document.createElement("div");
+			chooseWorkoutDiv.append(start_cancel_wrapper);
+			var start_button = document.createElement("button");
+			start_button.innerHTML = "Start!";
+			start_button.id = "start_button";
+			start_cancel_wrapper.appendChild(start_button); 
+			start_button.addEventListener("click", startWorkout);
+			var cancel_button = document.createElement("button");
+			cancel_button.innerHTML = "cancel";
+			cancel_button.id = "cancel_button";
+			start_cancel_wrapper.appendChild(cancel_button); 
+			cancel_button.addEventListener("click", ToggleWorkoutDiv);
 
 
 
