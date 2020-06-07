@@ -1,4 +1,8 @@
-/* spotify green is rgb(29, 185, 91) */
+/* spotify colors:
+- green is rgb(29, 185, 91)
+- light grey is rgb(178, 178, 178) 
+- medium grey is rgb(44,44,44) */
+
 /*======for toggle switch button =====*/
 .switch {
   position: relative;
@@ -38,7 +42,6 @@
 }
 
 input:checked + .slider {
-  /* background-color: #2196F3; */
   background-color: rgba(147, 236, 181, 0.877);
 }
 
@@ -93,7 +96,7 @@ input:checked + .slider:before {
     height: 25px;
     line-height: 25px;
 }
-#chooseWorkoutDiv{
+#workoutDiv{
     min-width: 300px;
     box-shadow: 0 4px 8px 0 rgba(216, 213, 213, 0.192), 0 6px 20px 0 rgba(216, 213, 213, 0.445);
 
@@ -118,57 +121,80 @@ input:checked + .slider:before {
 /* normal buttons (smaller than start / play / etc. buttons */
 .btn-gray {
     border: 2px solid black;
-    border-color: #e7e7e7;
-    background-color: white;
-    color: black;
+    border-color: rgb(178, 178, 178);
+    background-color: rgb(44,44,44);
+    color: rgb(178, 178, 178);
     padding: 5px 24px;
     border-radius: 25px;
     cursor: pointer;
-  }
-  .btn-gray:hover {
-    background: #e7e7e7;
-    transform: scale(1.05) perspective(1px)
-  }
-   /* for part of cancel button css */
-   .cancel-button {
-    border: 2px solid black;
-    border-color: #e7e7e7;
-    background-color: white;
-    color: black;
-    padding: 14px 28px;
-    border-radius: 25px;
-    cursor: pointer;
-  }
-  .cancel-button:hover {
-    background: #e7e7e7;
-    transform: scale(1.05) perspective(1px)
-  }
-  /*Green - for start buttons */
-  .btn-green {
+}
+.btn-gray:hover {
+background: rgb(35,35,35);
+border-color: white;
+transform: scale(1.05) perspective(1px)
+}
+
+/* for the cancel button css */
+.cancel-button {
+border: 2px solid black;
+border-color: #e7e7e7;
+background-color: white;
+color: black;
+padding: 14px 28px;
+border-radius: 25px;
+cursor: pointer;
+}
+.cancel-button:hover {
+background: #e7e7e7;
+transform: scale(1.05) perspective(1px)
+}
+/*Green - for start button */
+.btn-green {
     border: 2px solid black; 
+    border-color: rgb(29, 185, 91);
     background-color:rgb(29, 185, 91);
     color: white;
     padding: 14px 28px;
     border-radius: 25px;
     cursor: pointer;
-    border-color: rgb(29, 185, 91);
-  }
-  .btn-green:hover{
-    background-color: green;
+
+}
+.btn-green:hover{
+    /* background-color: rgba(29, 185, 91, 0.616); */
+    /* border-color: rgba(29, 185, 91, 0.616); */
     transform: scale(1.05) perspective(1px);
-    border-color: green;
-  }
 
-  .green {
-    border-color: #4CAF50;
-    color: green;
-  }
-  .green:hover {
-    background-color: #4CAF50;
+}
+/*play-pause button */
+.btn-play {
+    border: 2px solid black; 
+    background-color:rgb(29, 185, 91);
     color: white;
-    transform: scale(1.05) perspective(1px)
-  }
-
+    border-radius: 50%;
+    height:56px; /* to set height and width or else it becomes oval */
+    width:56px;
+    cursor: pointer;
+    border-color: rgb(29, 185, 91);
+}
+.btn-play:hover{
+    /* background-color: rgb(29, 185, 91); */
+    transform: scale(1.10) perspective(1px);
+    /* border-color: rgb(29, 185, 91); */
+}
+/*stop button */
+.btn-stop {
+    border: 2px solid black; 
+    background-color:rgb(40,40,40);
+    color: white;
+    border-radius: 50%;
+    height:56px;
+    width:56px;
+    cursor: pointer;
+    border-color:rgb(29, 185, 91);
+}
+.btn-stop:hover{
+    transform: scale(1.10) perspective(1px);
+}
 /* uses to make buttons not go together in center of div without margin */
 .spacing-horizontal{
     margin-left: 10px;
@@ -179,6 +205,10 @@ input:checked + .slider:before {
     margin-bottom: 10px;
     margin-left: 20px;
     margin-right: 20px;
+}
+.extra-spacing{ /* separates further the play-pause and stop button div from the timer div above and the speed div below */
+    margin-top: 30px;
+    margin-bottom: 30px;
 }
 
 /* used for the button that has hiitify toggle / auth functionality */
@@ -197,6 +227,16 @@ background-color: white;
 border-color: white;
 color: rgb(29, 185, 91);
 }
+/* =========================================*/
+/*changing speed-extension-input to green, roundabout but it works*/
+#speed-extension-input {
+    filter: grayscale(100%) sepia(100%) hue-rotate(90deg) brightness(1.7); 
+}
+#speed-extension-input:hover { 
+filter: grayscale(100%) sepia(100%) hue-rotate(90deg) brightness(2.0); 
+}
 
-
+#speed-extension-input:active{
+    filter: grayscale(100%) sepia(100%) hue-rotate(90deg) brightness(1.2); 
+}
 /* =========================================*/

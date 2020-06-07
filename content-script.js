@@ -83,7 +83,7 @@ var code = `
 			if(document.getElementById('speed-extension-input') == null) /* check if our input element doesnt exist */
 			{
 				try {
-					document.getElementById('chooseWorkoutDiv').appendChild(input);
+					document.getElementById('workoutDiv').appendChild(input);
 					// document.getElementsByClassName('now-playing-bar__right')[0].appendChild (input); /* make our input exist on page */
 				}catch{
 					setTimeout(timeout, 100);/*now-playing-bar__right doesnt exist yet so lets try again in 100ms*/
