@@ -877,7 +877,11 @@ function makeDraggable(elmnt) {
     elmnt.onmousedown = dragMouseDown;
   function dragMouseDown(e) {
 	//no dragging in input fields or buttons (or else you can't type anything or release buttons without clicking it), 
-	if ((e.target.tagName === "INPUT") || (e.target.tagName === "BUTTON") || (e.target.className.includes("beep_toggle"))){ 
+	if ((e.target.tagName === "INPUT") || (e.target.tagName === "BUTTON")){ 
+		return;
+	}
+	//no dragging on the beeping sounds toggle switch either
+	if (e.target.className != null && e.target.className.includes("beep_toggle")){
 		return;
 	}
     e = e || window.event;
