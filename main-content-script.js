@@ -670,14 +670,25 @@ function makeWorkoutDiv(){
 	stop_svg.setAttributeNS(null,"role","img");
 	stop_svg.setAttributeNS(null,"viewBox","0 0 24 24");
 	end_workout_button.appendChild(stop_svg);
-    var square = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+	var square = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+	square.id = "stop_square_img";
     square.setAttributeNS(null,"x","3");
     square.setAttributeNS(null,"rx","2");
-	square.setAttributeNS(null,"y","4");
+	square.setAttributeNS(null,"y","5");
     square.setAttributeNS(null,"width","18");
-    square.setAttributeNS(null,"height","18");
+	square.setAttributeNS(null,"height","18");
+	square.setAttributeNS(null,"stroke-width","3");
     square.style.fill="rgb(40,40,40)";
-    square.style.stroke="rgb(29, 185, 91)";
+	square.style.stroke="rgb(29, 185, 91)";
+	//making the svg turn red when you hover over the button
+	end_workout_button.onmouseover = function() {mouseOver()};
+	end_workout_button.onmouseout = function() {mouseOut()};
+	function mouseOver() {
+		square.style.stroke="#f94e4e";
+	}
+	function mouseOut() {
+		square.style.stroke="rgb(29, 185, 91)";
+	}
 	stop_svg.appendChild(square);
 
 	//wrapper div for toggle switch and label

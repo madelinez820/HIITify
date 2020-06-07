@@ -183,7 +183,7 @@ transform: scale(1.05) perspective(1px)
 }
 /*stop button */
 .btn-stop {
-    border: 2px solid black; 
+    border: 3px solid black; 
     background-color:rgb(40,40,40);
     color: white;
     border-radius: 50%;
@@ -194,6 +194,7 @@ transform: scale(1.05) perspective(1px)
 }
 .btn-stop:hover{
     transform: scale(1.10) perspective(1px);
+    border-color:#f94e4e;
 }
 /* uses to make buttons not go together in center of div without margin */
 .spacing-horizontal{
