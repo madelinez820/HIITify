@@ -23,6 +23,8 @@ window.addEventListener ("load", loadButtons, false);
 makeWorkoutDiv();
 dragElement(document.getElementById("chooseWorkoutDiv"));
 var workoutTimer;
+var themeGreen = "rgb(29, 185, 91)"; // no longer neon green "#39ff14"
+var themeRed = "#f94e4e"; // no longer normal red "#FF0000"
 
 /** ============================================================================================================*/
 /*  BPM Calculation Code
@@ -129,18 +131,18 @@ function startTimer(duration, fromPause) {
 		intervalTypeText.innerHTML = (sessionStorage.getItem("currentIntervalType") == "work" ) ? "WORKOUT!": "REST";
 
 		//add audio and visual cues to signal last 3 seconds / start of an interval
-		intervalTypeText.style.color = (sessionStorage.getItem("currentIntervalType") == "work" ) ? "#39ff14": "#ff0000"; //neon green if work interval, neon red if rest interval
+		intervalTypeText.style.color = (sessionStorage.getItem("currentIntervalType") == "work" ) ? themeGreen : themeRed; //neon green if work interval, neon red if rest interval
 		if (timer <= 3 && timer > 0){ //red on last 3 seconds of the workout
-			display_total_time.style.color = "#ff0000"; // neon red 
+			display_total_time.style.color = themeRed;
 			beep("last");
 		}
 		if ((currentIntervalRemainingTime == localStorage.getItem("wiLength") && sessionStorage.getItem("currentIntervalType") == "work") ||  // sets text green and beeps
 			(currentIntervalRemainingTime == localStorage.getItem("riLength") && sessionStorage.getItem("currentIntervalType") == "rest") ){
-			intervalTimeRemainingText.style.color = "#39ff14"; // neon green
+			intervalTimeRemainingText.style.color = themeGreen; 
 			beep("first");
 		}
 		else if (parseInt(currentIntervalRemainingTime, 10) <= 3){ // sets text red and beeps
-			intervalTimeRemainingText.style.color = "#ff0000"; // neon red
+			intervalTimeRemainingText.style.color = themeRed; 
 			beep("last");
 
 		}
@@ -399,8 +401,6 @@ function loadButtons (evt) {
 			var speed_extension_input = document.getElementById('speed-extension-input');
 			speed_extension_input.oninput = updateTextCurrentSpeed;
 			speed_extension_input.style.width = '100%';
-			// makeWorkoutDiv();
-			// dragElement(document.getElementById("chooseWorkoutDiv"));
 			
 		}
     }
@@ -412,7 +412,7 @@ function loadButtons (evt) {
 function makeHittifyButton(){
     var b = document.createElement('button');
 	b.innerHTML = 'HIITify!';
-	b.className = "btn-outline green";
+	b.className = "auth-button spacing-horizontal";
 	b.addEventListener("click", ToggleWorkoutDiv);
     return b;
 }
@@ -422,7 +422,6 @@ function makeAuthButton(){
   var b = document.createElement("button");
   b.id =  "authBtn";
   b.innerHTML = 'Auth Button';
-  b.className = "btn-green";
   b.addEventListener("click", handler);
   return b;
 }
@@ -474,159 +473,141 @@ function makeWorkoutDiv(){
 			title.id="workout_title";
 			chooseWorkoutDiv.appendChild(title)
 			
+			//wrapper div for input fields for wi_length, ri_length, etc.
+			var input_wrapper = document.createElement("div");
+			input_wrapper.className = "wrapper-div-spacing";
 			// A1. Work Interval Length
 			var wi_length_label = document.createElement("label");
 			wi_length_label.setAttribute("for","wi_length_input");
 			wi_length_label.innerHTML = "Work Interval Length (sec): ";
 			wi_length_label.id = "wi_length_label";
-			chooseWorkoutDiv.appendChild(wi_length_label);
+			input_wrapper.appendChild(wi_length_label);
 			var br1 = document.createElement('br');
 			br1.id ="br1";
-			chooseWorkoutDiv.appendChild(br1);
+			input_wrapper.appendChild(br1);
 			var wi_length_input = document.createElement("input");
 			wi_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			wi_length_input.id="wi_length";
 			wi_length_input.onkeypress = OnlyNums;
 			wi_length_input.value= (localStorage.getItem("wiLength") == undefined) ? "30" : localStorage.getItem("wiLength");
-			chooseWorkoutDiv.appendChild(wi_length_input);
+			input_wrapper.appendChild(wi_length_input);
 			var br2 = document.createElement('br');
 			br2.id ="br2";
-			chooseWorkoutDiv.appendChild(br2);
+			input_wrapper.appendChild(br2);
 			
 			// A2. Work Interval BPM
 			var wi_bpm_label = document.createElement("label");
 			wi_bpm_label.setAttribute("for","wi_length_input");
 			wi_bpm_label.innerHTML = "Work Interval BPM: ";
 			wi_bpm_label.id = "wi_bpm_label";
-			chooseWorkoutDiv.appendChild(wi_bpm_label);
+			input_wrapper.appendChild(wi_bpm_label);
 			var br3 = document.createElement('br');
 			br3.id ="br3";
-			chooseWorkoutDiv.appendChild(br3);
+			input_wrapper.appendChild(br3);
 			var wi_bpm_input = document.createElement("input");
 			wi_bpm_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			wi_bpm_input.id="wi_bpm";
 			wi_bpm_input.onkeypress = OnlyNums;
 			wi_bpm_input.value= (localStorage.getItem("wiBPM") == undefined) ? "160" : localStorage.getItem("wiBPM");
-			chooseWorkoutDiv.appendChild(wi_bpm_input);
+			input_wrapper.appendChild(wi_bpm_input);
 			var br4 = document.createElement('br');
 			br4.id ="br4";
-			chooseWorkoutDiv.appendChild(br4);
+			input_wrapper.appendChild(br4);
 			
 			// A3. Rest Interval Length
 			var ri_length_label = document.createElement("label");
 			ri_length_label.setAttribute("for","wi_length_input");
 			ri_length_label.innerHTML = "Rest Interval Length (sec): ";
 			ri_length_label.id = "ri_length_label";
-			chooseWorkoutDiv.appendChild(ri_length_label);
+			input_wrapper.appendChild(ri_length_label);
 			var br5 = document.createElement('br');
 			br5.id ="br5";
-			chooseWorkoutDiv.appendChild(br5);
+			input_wrapper.appendChild(br5);
 			var ri_length_input = document.createElement("input");
 			ri_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			ri_length_input.id="ri_length";
 			ri_length_input.onkeypress = OnlyNums;
 			ri_length_input.value= (localStorage.getItem("riLength") == undefined) ? "10" : localStorage.getItem("riLength");
-			chooseWorkoutDiv.appendChild(ri_length_input);
+			input_wrapper.appendChild(ri_length_input);
 			var br6 = document.createElement('br');
 			br6.id ="br6";
-			chooseWorkoutDiv.appendChild(br6);
+			input_wrapper.appendChild(br6);
 			
 			// A4. Rest Interval BPM
 			var ri_bpm_label = document.createElement("label");
 			ri_bpm_label.setAttribute("for","wi_length");
 			ri_bpm_label.innerHTML = "Rest Interval BPM: ";
 			ri_bpm_label.id = "ri_bpm_label";
-			chooseWorkoutDiv.appendChild(ri_bpm_label);
+			input_wrapper.appendChild(ri_bpm_label);
 			var br7 = document.createElement('br');
 			br7.id ="br7";
-			chooseWorkoutDiv.appendChild(br7);
+			input_wrapper.appendChild(br7);
 			var ri_bpm_input = document.createElement("input");
 			ri_bpm_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			ri_bpm_input.id="ri_bpm";
 			ri_bpm_input.onkeypress = OnlyNums;
 			ri_bpm_input.value = "115";
 			ri_bpm_input.value= (localStorage.getItem("riBPM") == undefined) ? "100" : localStorage.getItem("riBPM");
-			chooseWorkoutDiv.appendChild(ri_bpm_input);
+			input_wrapper.appendChild(ri_bpm_input);
 			var br8 = document.createElement('br');
 			br8.id ="br8";
-			chooseWorkoutDiv.appendChild(br8);
+			input_wrapper.appendChild(br8);
 			
 			// A5. Total Workout Length
 			var tw_length_label = document.createElement("label");
 			tw_length_label.setAttribute("for","wi_length_input");
 			tw_length_label.innerHTML = "Total Workout Length (min): ";
 			tw_length_label.id = "tw_length_label";
-			chooseWorkoutDiv.appendChild(tw_length_label);
+			input_wrapper.appendChild(tw_length_label);
 			var br9 = document.createElement('br');
 			br9.id ="br9";
-			chooseWorkoutDiv.appendChild(br9);
+			input_wrapper.appendChild(br9);
 			var tw_length_input = document.createElement("input");
 			tw_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
 			tw_length_input.id="tw_length";
 			tw_length_input.onkeypress = OnlyNums;
 			tw_length_input.value= (localStorage.getItem("twLength") == undefined) ? "10" : localStorage.getItem("twLength");
-			chooseWorkoutDiv.appendChild(tw_length_input);
+			input_wrapper.appendChild(tw_length_input);
 			var br10 = document.createElement('br');
 			br10.id ="br10";
-			chooseWorkoutDiv.appendChild(br10);
+			input_wrapper.appendChild(br10);
+			chooseWorkoutDiv.appendChild(input_wrapper);
 
+			//wrapper div for title, both timer countdown, and interval type text
+			var timer_wrapper = document.createElement("div");
+			timer_wrapper.className = "wrapper-div-spacing";
 			// B0. workout div's title
 			var hiitify_title = document.createElement('H2');
 			hiitify_title.className = "_2e77de28f0b30f1b6e8d479009f45e0e-scss hiitify_title"
 			hiitify_title.innerHTML = "HIITify";
 			hiitify_title.id="hiitify_title";
 			hiitify_title.style.display = "none";
-			chooseWorkoutDiv.appendChild(hiitify_title)
-
+			timer_wrapper.appendChild(hiitify_title)
 			//B1. total time remaining - could be a countdown or maybe a bar with % done?
 			var total_time_remaining = document.createElement('p');
 			total_time_remaining.id = "total_time_remaining";
 			total_time_remaining.style.display = "none";
-			chooseWorkoutDiv.appendChild(total_time_remaining);
-
+			timer_wrapper.appendChild(total_time_remaining);
 			//B2. interval time remaining
 			var interval_time_remaining = document.createElement('div');
 			interval_time_remaining.id = "interval_time_remaining";
 			interval_time_remaining.style.display = "none"
-			chooseWorkoutDiv.appendChild(interval_time_remaining);
-
+			timer_wrapper.appendChild(interval_time_remaining);
 			//B3. interval type
 			var interval_type_label = document.createElement('H2');
 			interval_type_label.id = "interval_type_label";
 			interval_type_label.style.display = "none";
-			chooseWorkoutDiv.appendChild(interval_type_label);
-
-			//wrapper div for toggle switch and label
-			var beep_wrapper = document.createElement("div");
-			beep_wrapper.id = "beep_wrapper";
-			beep_wrapper.textAlign = "center";
-			chooseWorkoutDiv.appendChild(beep_wrapper);
-			//B9. beep toggle label
-			var beep_switch_label = document.createElement("label");
-			beep_switch_label.id = "beep_switch_label";
-			beep_switch_label.innerHTML = "Sound Effects:"
-			beep_wrapper.appendChild(beep_switch_label);
-			//B10. beep toggle switch
-			var beep_switch_label = document.createElement("label");
-			beep_switch_label.className ="switch beep_toggle";
-			var beep_switch_input = document.createElement("input");
-			beep_switch_input.id = "beep_switch_input";
-			beep_switch_input.classname = " beep_toggle"
-			beep_switch_input.checked = "true";
-			beep_switch_label.appendChild(beep_switch_input);
-			beep_switch_input.type = "checkbox";
-			var beep_switch_span = document.createElement("span");
-			beep_switch_label.appendChild(beep_switch_span);
-			beep_switch_span.className ="slider round beep_toggle";
-			beep_wrapper.appendChild(beep_switch_label);
+			timer_wrapper.appendChild(interval_type_label);
+			chooseWorkoutDiv.appendChild(timer_wrapper);
 
 			//wrapper div for play/pause and stop buttons
 			var play_pause_stop_wrapper = document.createElement("div");
+			play_pause_stop_wrapper.className = "wrapper-div-spacing";
 			chooseWorkoutDiv.appendChild(play_pause_stop_wrapper);
 			//B6. play pause button
 			var play_pause_button = document.createElement('button');
 			play_pause_button.innerHTML = 'Pause'; //TODO try to instead get it to look like spotify play pause
-			play_pause_button.className = "_11f5fc88e3dec7bfec55f7f49d581d78-scss";//TODO need to do the icon and tooltip thing
+			play_pause_button.className = "_11f5fc88e3dec7bfec55f7f49d581d78-scss spacing-horizontal";//TODO need to do the icon and tooltip thing
 			play_pause_button.id = 'play_pause_button';
 			play_pause_button.addEventListener("click", playPause);
 			play_pause_button.style.display = "none";
@@ -635,30 +616,59 @@ function makeWorkoutDiv(){
 			//B7. stop button
 			var end_workout_button = document.createElement('button');
 			end_workout_button.innerHTML = 'End Workout';
+			end_workout_button.className = "spacing-horizontal";
 			end_workout_button.id = 'end_workout_button';
 			end_workout_button.addEventListener("click", endWorkout);
 			end_workout_button.style.display = "none";
 			play_pause_stop_wrapper.appendChild(end_workout_button);
 
+
+			//wrapper div for toggle switch and label
+			var beep_wrapper = document.createElement("div");
+			beep_wrapper.id = "beep_wrapper";
+			beep_wrapper.className = "wrapper-div-spacing";
+			beep_wrapper.textAlign = "center";
+			chooseWorkoutDiv.appendChild(beep_wrapper);
+			//B9. beep toggle label
+			var beep_switch_label = document.createElement("label");
+			beep_switch_label.id = "beep_switch_label";
+			beep_switch_label.innerHTML = "Beeping Sounds:"
+			beep_wrapper.appendChild(beep_switch_label);
+			//B10. beep toggle switch
+			var beep_switch_label = document.createElement("label");
+			beep_switch_label.className ="switch beep_toggle spacing-horizontal";
+			var beep_switch_input = document.createElement("input");
+			beep_switch_input.id = "beep_switch_input";
+			beep_switch_input.className = " beep_toggle spacing-horizontal"
+			beep_switch_input.checked = "true";
+			beep_switch_label.appendChild(beep_switch_input);
+			beep_switch_input.type = "checkbox";
+			var beep_switch_span = document.createElement("span");
+			beep_switch_label.appendChild(beep_switch_span);
+			beep_switch_span.className ="slider round beep_toggle";
+			beep_wrapper.appendChild(beep_switch_label);
+
+
 			// wrapper div for hittify speed button and reset speed button
-			var speed_wrapper = document.createElement("div");
-			chooseWorkoutDiv.appendChild(speed_wrapper)
+			var speed_button_wrapper = document.createElement("div");
+			speed_button_wrapper.className = "wrapper-div-spacing";
+			chooseWorkoutDiv.appendChild(speed_button_wrapper);
 			//B4. hiitify speed button
 			var hittify_speed_button = document.createElement('button');
 			hittify_speed_button.innerHTML = 'HIITify Speed';
-			hittify_speed_button.className = "btn-outline gray"; 
+			hittify_speed_button.className = "btn-gray spacing-horizontal"; 
 			hittify_speed_button.id = 'hittify_speed_button';
 			hittify_speed_button.addEventListener("click", hiitifySpeed);
 			hittify_speed_button.style.display = "none";
-			speed_wrapper.appendChild(hittify_speed_button);
+			speed_button_wrapper.appendChild(hittify_speed_button);
 			//B5. reset speed button
 			var reset_speed_button = document.createElement('button');
 			reset_speed_button.innerHTML = 'Reset Speed';
-			reset_speed_button.className = "btn-outline gray"; 
+			reset_speed_button.className = "btn-gray spacing-horizontal"; 
 			reset_speed_button.id = 'reset_speed_button';
 			reset_speed_button.addEventListener("click", resetSpeed);
 			reset_speed_button.style.display = "none";
-			speed_wrapper.appendChild(reset_speed_button);
+			speed_button_wrapper.appendChild(reset_speed_button);
 
 			//B8. bpm and speed percentage text
 			var speed_text_label = document.createElement('p');
@@ -669,16 +679,17 @@ function makeWorkoutDiv(){
 
 			// A6. wrapper div for Workout Start Button and cancel button
 			var start_cancel_wrapper = document.createElement("div");
+			start_cancel_wrapper.className = "wrapper-div-spacing";
 			chooseWorkoutDiv.append(start_cancel_wrapper);
 			var start_button = document.createElement("button");
 			start_button.innerHTML = "Start!";
-			start_button.className = "btn-green";
+			start_button.className = "btn-green spacing-horizontal";
 			start_button.id = "start_button";
 			start_cancel_wrapper.appendChild(start_button); 
 			start_button.addEventListener("click", startWorkout);
 			var cancel_button = document.createElement("button");
 			cancel_button.innerHTML = "cancel";
-			cancel_button.className = "btn-outline cancel"; 
+			cancel_button.className = "cancel-button spacing-horizontal"; 
 			cancel_button.id = "cancel_button";
 			start_cancel_wrapper.appendChild(cancel_button); 
 			cancel_button.addEventListener("click", ToggleWorkoutDiv);

@@ -1,3 +1,4 @@
+/* spotify green is rgb(29, 185, 91) */
 /*======for toggle switch button =====*/
 .switch {
   position: relative;
@@ -114,39 +115,31 @@ input:checked + .slider:before {
 }
 
 /* =============button css =====================*/
-.btn-outline {
+/* normal buttons (smaller than start / play / etc. buttons */
+.btn-gray {
     border: 2px solid black;
+    border-color: #e7e7e7;
+    background-color: white;
+    color: black;
+    padding: 5px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+  }
+  .btn-gray:hover {
+    background: #e7e7e7;
+    transform: scale(1.05) perspective(1px)
+  }
+   /* for part of cancel button css */
+   .cancel-button {
+    border: 2px solid black;
+    border-color: #e7e7e7;
     background-color: white;
     color: black;
     padding: 14px 28px;
     border-radius: 25px;
     cursor: pointer;
   }
-  /* Red */
-  /* .red {
-    border-color: #f44336;
-    color: red;
-  }
-  .red:hover {
-    background: #f44336;
-    transform: scale(1.05) perspective(1px);
-    color: white;
-  } */
-  /* Gray - for part of other button css*/
-  .gray {
-    border-color: #e7e7e7;
-    color: black;
-  }
-  .gray:hover {
-    background: #e7e7e7;
-    transform: scale(1.05) perspective(1px)
-  }
-   /* for part of cancel button css */
-   .cancel {
-    border-color: #e7e7e7;
-    color: black;
-  }
-  .cancel:hover {
+  .cancel-button:hover {
     background: #e7e7e7;
     transform: scale(1.05) perspective(1px)
   }
@@ -175,4 +168,35 @@ input:checked + .slider:before {
     color: white;
     transform: scale(1.05) perspective(1px)
   }
+
+/* uses to make buttons not go together in center of div without margin */
+.spacing-horizontal{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.wrapper-div-spacing{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+/* used for the button that has hiitify toggle / auth functionality */
+.auth-button {
+    border: 2px solid;
+    padding: 14px 28px;
+    border-radius: 25px;
+    cursor: pointer;
+    background-color: rgb(29, 185, 91);
+    color: white;
+    border-color: rgb(29, 185, 91);
+  }
+.auth-button:hover {
+transform: scale(1.05) perspective(1px);
+background-color: white;
+border-color: white;
+color: rgb(29, 185, 91);
+}
+
+
 /* =========================================*/
