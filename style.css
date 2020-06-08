@@ -185,8 +185,7 @@ transform: scale(1.05) perspective(1px)
     height:56px;
     width:56px;
     border-color:rgb(29, 185, 91);
-    position:absolute
-    ;
+    position:absolute;
     z-index: 0;
 }
 .btn-stop:hover{
@@ -243,58 +242,45 @@ filter: grayscale(100%) sepia(100%) hue-rotate(90deg) brightness(2.0);
 .tooltip_parent .tooltip_span {
     display: none;
 }
+.tooltip_parent .tooltip_span::after { /*makes the triangle in the tooltip */
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgb(46, 45, 45) transparent transparent transparent;
+  }
+
 .tooltip_span {
     display: none;
-    border-radius: 5px;
-    background: rgb(44,44,44);
+    background: rgb(46, 45, 45);
     font-size: 12px;
-    padding: 2px;
     position: absolute;
     pointer-events: none;
-    overflow: hidden;
     white-space: nowrap;
 
-    /* https://medium.com/cloud-native-the-gathering/how-to-use-css-to-fade-in-and-fade-out-html-text-and-pictures-f45c11364f08 */
-    /* for fade in animation */
-    /* animation: fadeIn ease 2s;
-    -webkit-animation: fadeIn ease 2s;
-    -moz-animation: fadeIn ease 2s;
-    -o-animation: fadeIn ease 2s;
-    -ms-animation: fadeIn ease 2s; */
+    color: rgb(178, 178, 178);
+    text-align: center;
+    border-radius: 6px;
+    padding: 1px 5px;
+    z-index: 100;
+    bottom: 120%;
+    left: 50%;
+    margin-left: -32px;
+    box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+
+    /* for delay showing it: */
+    animation: fadeIn linear 0.1s;
+    animation-fill-mode: both; /* helps it not appear at beginning */
+    animation-delay: 1s; 
 }
-/* 
 @keyframes fadeIn {
     0% {
-      opacity:0;
+      opacity: 0;
     }
     100% {
-      opacity:1;
+      opacity: 1;
     }
-  }
-  
-  @-webkit-keyframes fadeIn {
-    0% {
-      opacity:0;
-    }
-    100% {
-      opacity:1;
-    }
-  }
-  
-  @-o-keyframes fadeIn {
-    0% {
-      opacity:0;
-    }
-    100% {
-      opacity:1;
-    }
-  }
-  
-  @-ms-keyframes fadeIn {
-    0% {
-      opacity:0;
-    }
-    100% {
-      opacity:1;
-  }
-  } */
+}

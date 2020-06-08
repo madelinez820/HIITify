@@ -285,7 +285,7 @@ function  playPause(){
 		pa1.style.display="none";
 		pa2.style.display="none";
 		//changes tooltip (TODO: should disappear and then fade back in)
-		play_pause_button_span.innerHTML = "Continue Timer";
+		play_pause_button_span.innerHTML = "Start Timer";
 		window.sessionStorage.setItem("isWorkoutOngoing", false);
 		clearInterval(workoutTimer);
 
@@ -673,9 +673,6 @@ function makeWorkoutDiv(){
 	end_workout_button.addEventListener("click", endWorkout);
 	end_workout_button.style.display = "none";
 	play_pause_stop_wrapper.appendChild(end_workout_button);
-	//not sure why, but setting the zindex of both the tooltip and the elements that should be underneath it here works only works here (didn't work in css)
-	end_workout_button.style.zIndex = 0;
-	play_pause_button_span.style.zIndex = 1000;
 	//B7a. stop button tooltip
 	var stop_button_span = document.createElement("span");
 	stop_button_span.className = "tooltip_span";
