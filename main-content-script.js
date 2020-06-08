@@ -891,8 +891,8 @@ function makeDraggable(elmnt) {
 	if ((e.target.tagName === "INPUT") || (e.target.tagName === "BUTTON")){ 
 		return;
 	}
-	//no dragging on the beeping sounds toggle switch either
-	if (e.target.className != null && e.target.className.includes("beep_toggle")){
+	//no dragging on the beeping sounds toggle switch either (svg / polygon / rect check is needed bc those have className but don't have an .includes() function, which throws an error)
+	if (e.target.className != null && e.target.nodeName != "svg" && e.target.nodeName != "polygon" && e.target.nodeName != "rect" && e.target.className.includes("beep_toggle")){
 		return;
 	}
     e = e || window.event;
