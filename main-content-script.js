@@ -284,7 +284,8 @@ function  playPause(){
 		pl.style.display="inline";
 		pa1.style.display="none";
 		pa2.style.display="none";
-
+		//changes tooltip (TODO: should disappear and then fade back in)
+		play_pause_button_span.innerHTML = "Continue Timer";
 		window.sessionStorage.setItem("isWorkoutOngoing", false);
 		clearInterval(workoutTimer);
 
@@ -293,6 +294,8 @@ function  playPause(){
 		pa1.style.display="inline";
 		pa2.style.display="inline";
 		pl.style.display="none";
+
+		play_pause_button_span.innerHTML = "Pause Timer";
 		startTimer(parseInt(window.sessionStorage.getItem("currentWorkoutRemainingTime")-1), true);
 	}
 }
@@ -477,7 +480,7 @@ function makeWorkoutDiv(){
 	workoutDiv.id = "workoutDiv";
 	//making the div appear in front of the other page elements
 	workoutDiv.style.position="absolute";
-	workoutDiv.style.zIndex="100";
+	workoutDiv.style.zIndex=100;
 
 	// A0. workout div's title
 	var title = document.createElement('H2');
@@ -621,12 +624,19 @@ function makeWorkoutDiv(){
 	workoutDiv.appendChild(play_pause_stop_wrapper);
 	//B6. play pause button
 	var play_pause_button = document.createElement('button');
-	play_pause_button.className = 'btn-play spacing-horizontal';
+	play_pause_button.className = 'btn-play spacing-horizontal tooltip_parent';
 	play_pause_button.id = 'play_pause_button';
 	play_pause_button.addEventListener("click", playPause);
 	play_pause_button.style.display = "none";
 	play_pause_stop_wrapper.appendChild(play_pause_button);
-	//B6a. play graphic 
+	//B6a. play pause button tooltip
+	var play_pause_button_span = document.createElement("span");
+	play_pause_button_span.className = "tooltip_span";
+	play_pause_button_span.id = "play_pause_button_span";
+	play_pause_button_span.innerHTML = "Pause Timer";
+	play_pause_button.appendChild(play_pause_button_span);
+
+	//B6b. play graphic 
 	var svg = document.createElementNS("http://www.w3.org/2000/svg",'svg');
 	svg.setAttributeNS(null,"height", "28");
 	svg.setAttributeNS(null,"width","28");
@@ -638,7 +648,7 @@ function makeWorkoutDiv(){
 	triangle_polygon.setAttribute("points","21.57 14 5.98 5 5.98 23 21.57 14");
   	triangle_polygon.style.fill="white";
 	svg.appendChild(triangle_polygon);
-	//B6b. pause graphic
+	//B6c. pause graphic
 	triangle_polygon.style.display="none";
 	var rect1 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
 	rect1.id = "pause_img_1";
@@ -658,11 +668,19 @@ function makeWorkoutDiv(){
 	svg.appendChild(rect2);
 	//B7. stop button
 	var end_workout_button = document.createElement('button');
-	end_workout_button.className = "btn-stop spacing-horizontal";
+	end_workout_button.className = "btn-stop spacing-horizontal tooltip_parent";
 	end_workout_button.id = 'end_workout_button';
 	end_workout_button.addEventListener("click", endWorkout);
 	end_workout_button.style.display = "none";
 	play_pause_stop_wrapper.appendChild(end_workout_button);
+	//not sure why, but setting the zindex of both the tooltip and the elements that should be underneath it here works only works here (didn't work in css)
+	end_workout_button.style.zIndex = 0;
+	play_pause_button_span.style.zIndex = 1000;
+	//B7a. stop button tooltip
+	var stop_button_span = document.createElement("span");
+	stop_button_span.className = "tooltip_span";
+	stop_button_span.innerHTML = "Stop Workout";
+	end_workout_button.appendChild(stop_button_span);
 	//B7a. stop graphic
 	var stop_svg = document.createElementNS("http://www.w3.org/2000/svg",'svg');
 	stop_svg.setAttributeNS(null,"height", "28");
