@@ -25,6 +25,7 @@ makeDraggable(document.getElementById("workoutDiv"));
 var workoutTimer;
 var themeGreen = "rgb(29, 185, 91)";
 var themeRed = "#f94e4e"; 
+
 /** ============================================================================================================*/
 /*  BPM Calculation Code
 /** ============================================================================================================*/
@@ -251,7 +252,6 @@ function resetSpeed(){
  * sets the current song's speed to be what it should be given the inputted BPM for the current interval
  */
 function hiitifySpeed(){
-	//TODO implement
 	if (sessionStorage.getItem("currentIntervalType") == "work"){
 		updateBPM(localStorage.getItem("wiBPM"));
 	} else{
@@ -286,7 +286,8 @@ function  playPause(){
 		pl.style.display="inline";
 		pa1.style.display="none";
 		pa2.style.display="none";
-		//changes tooltip (TODO: should disappear and then fade back in)
+
+		//changes tooltip
 		play_pause_button_span.innerHTML = "Start Timer";
 		window.sessionStorage.setItem("isWorkoutOngoing", false);
 		clearInterval(workoutTimer);
@@ -315,7 +316,7 @@ function endWorkout(){
  * eg: at the end of a workout, perhaps when the page is refreshed to ensure the song is at normal 100 speed
  */
 function cleanUpWorkoutVariables(){
-	changeCurrentSongToSpeed(100);
+	resetSpeed();
 	clearInterval(workoutTimer);
 	sessionStorage.removeItem("currentIntervalType");
 	sessionStorage.removeItem("currentIntervalRemainingTime");
@@ -416,7 +417,7 @@ function loadButtons (evt) {
 			clearInterval (jsInitChecktimer2);
 			var speed_extension_input = document.getElementById('speed-extension-input');
 			speed_extension_input.oninput = updateTextCurrentSpeed;
-			speed_extension_input.style.width = '100%';	
+			speed_extension_input.style.width = '100%';	 
 		}
 	}
 	

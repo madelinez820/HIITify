@@ -37,8 +37,9 @@ var code = `
 		function getStoredSpeed(){ /* Gets stored speed between refreshes*/
 			return localStorage.getItem('speed');
 		}
-		var lastSpeed = getStoredSpeed() || 1.0; /* if stored speed is null make lastSpeed 1.0 */
-	
+		var lastSpeed = 1.0; //replace with 'getStoredSpeed() || 1.0;' and don't setItem here if we want to keep warped speed after refresh
+		localStorage.setItem('speed',1);
+		
 		function setStoredSpeed(value){ /* Sets variable in the site's cookie along-side spotify's stuff */
 			localStorage.setItem('speed',value);
 		}
