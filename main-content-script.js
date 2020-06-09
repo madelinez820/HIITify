@@ -172,9 +172,11 @@ function startTimer(duration, fromPause) {
 				if (sessionStorage.getItem("currentIntervalType") === "rest") { 
 					sessionStorage.setItem("currentIntervalRemainingTime", localStorage.getItem("wiLength")); 
 					sessionStorage.setItem("currentIntervalType", "work");
+					updateBPM(localStorage.getItem("wiBPM"));
 				} else{ 
 					sessionStorage.setItem("currentIntervalRemainingTime", localStorage.getItem("riLength")); 
 					sessionStorage.setItem("currentIntervalType", "rest");
+					updateBPM(localStorage.getItem("riBPM"));
 				}
 			}
 		}
