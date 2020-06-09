@@ -23,6 +23,7 @@ window.addEventListener ("load", loadButtons, false);
 makeWorkoutDiv();
 makeDraggable(document.getElementById("workoutDiv"));
 var workoutTimer;
+var playPauseMusicButton;
 var themeGreen = "rgb(29, 185, 91)";
 var themeRed = "#f94e4e"; 
 
@@ -393,6 +394,7 @@ function loadButtons (evt) {
 	var jsInitChecktimer1 = setInterval (add_Auth_Button, 111);
 	var jsInitChecktimer2 = setInterval (add_Update_Speed_Text_Listener, 111);
 	var jsInitChecktimer3 = setInterval(add_Song_Change_Listener);
+	var jsInitChecktimer4 = setInterval(add_PlayPause_Music_Button_Listener);
 
     //loading the hiitify button when things load
     function add_Hiitify_Button () {
@@ -437,6 +439,24 @@ function loadButtons (evt) {
 			var config = { attributes: true, childList: true, characterData: true };
 			// pass in the target node, as well as the observer options
 			observer.observe(songTitleA, config);
+		}
+	}
+
+	function add_PlayPause_Music_Button_Listener(){
+		// console.log((document.querySelectorAll("button[data-testid~= 'control-button-play']").length > 0))
+		// console.log(document.querySelectorAll("button[data-testid~= 'control-button-pause']").length > 0);
+		if ((document.querySelectorAll("button[data-testid~= 'control-button-play']").length > 0) || (document.querySelectorAll("button[data-testid~= 'control-button-pause']").length > 0)){ // music play/pause button exists
+			clearInterval (jsInitChecktimer4);
+			playPauseMusicButton = (document.querySelectorAll("button[data-testid~= 'control-button-play']").length > 0) ? document.querySelectorAll("button[data-testid~= 'control-button-play']")[0] : document.querySelectorAll("button[data-testid~= 'control-button-pause']")[0];
+
+			var playPauseMusicObserver = new MutationObserver(function(mutations) {
+				console.log("play pause music button clicked");
+				//TODO Kris listener code here
+			});
+			// configuration of the observer:
+			var config = { attributes: true, childList: true, characterData: true,  attributeFilter: ['title']};
+			// pass in the target node, as well as the observer options
+			playPauseMusicObserver.observe(playPauseMusicButton, config);
 		}
 	}
 }
