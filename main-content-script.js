@@ -251,6 +251,12 @@ function resetSpeed(){
  */
 function hiitifySpeed(){
 	//TODO implement
+	if (sessionStorage.getItem("currentIntervalType") == "work"){
+		updateBPM(localStorage.getItem("wiBPM"));
+	} else{
+		updateBPM(localStorage.getItem("riBPM"));
+	}
+
 }
 
 function getAndUpdateBPM(new_bpm) {
