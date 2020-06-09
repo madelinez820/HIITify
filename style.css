@@ -98,7 +98,8 @@ input:checked + .slider:before {
 #workoutDiv{
     min-width: 330px;
     box-shadow: 0 4px 8px 0 rgba(216, 213, 213, 0.192), 0 6px 20px 0 rgba(216, 213, 213, 0.445);
-
+    width: auto; /* added after div started stretching 100% width suddently */
+    white-space: nowrap;
     /* used to help stretch speed slider to full width */
     display: flex;
     flex-direction: column;
