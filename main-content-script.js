@@ -35,7 +35,6 @@ var themeRed = "#f94e4e";
  * @param bpm 
  */
 function bpmToPercentageSpeed(bpm){
-	// console.log(100 * bpm / sessionStorage.getItem("currentSongOriginalBPM") + "Bpmtospeed");
 	return 100 * bpm / sessionStorage.getItem("currentSongOriginalBPM");
 }
 
@@ -44,7 +43,6 @@ function bpmToPercentageSpeed(bpm){
  * @param bpm 
  */
 function percentageSpeedToBPM(speed){
-	// console.log(speed * sessionStorage.getItem("currentSongOriginalBPM") / 100 + "percentagespeedtobpm");
 	return speed * sessionStorage.getItem("currentSongOriginalBPM") / 100;
 }
 
@@ -53,7 +51,6 @@ function percentageSpeedToBPM(speed){
  * @param speedPercentage: 100 for normal speed, < 100 for slower, >100 for faster 
  */
 function changeCurrentSongToSpeed(speedPercentage){ 
-	console.log("change currents ong to speed" + speedPercentage);
 	var speed_button = document.getElementById("speed-extension-input");
 	speed_button.value = speedPercentage.toString();
 
@@ -64,7 +61,6 @@ function changeCurrentSongToSpeed(speedPercentage){
 	}else{
 		speed_button.max = "200";
 	}
-
 	//manually updates (changing speed-extension-input's value via js doesn't trigger its onput automatically)
 	var setSpeedEvent = new Event ('changeSpeed'); 
 	speed_button.dispatchEvent(setSpeedEvent);
@@ -161,7 +157,6 @@ function startTimer(duration, fromPause) {
 		var previousIntervalTimeLeft = parseInt(sessionStorage.getItem("currentIntervalRemainingTime"), 10);
 		var updatedIntervalTimeLeft = previousIntervalTimeLeft - 1;
 		sessionStorage.setItem("currentIntervalRemainingTime", updatedIntervalTimeLeft);
-		(console.log(previousIntervalTimeLeft));
 
 		//edge case where either workout or rest interval is 0 seconds
 		if ((localStorage.getItem("wiLength") == "0") || (localStorage.getItem("riLength") == "0")){	
@@ -221,14 +216,11 @@ function beep(i){
  *  wi_length, wi_bpm, ri_length, ri_bpm, tw_length are values from the user inputted fields in workoutDiv
  */
 function startWorkout(){
-	console.log("Starting Workout");
-
 	var wi_length = parseInt(document.getElementById("wi_length").value, 10);
 	var wi_bpm = parseInt(document.getElementById("wi_bpm").value, 10);
 	var ri_length = parseInt(document.getElementById("ri_length").value, 10);
 	var ri_bpm = parseInt(document.getElementById("ri_bpm").value, 10);
 	var tw_length = parseInt(document.getElementById("tw_length").value, 10);
-	console.log(wi_length, wi_bpm, ri_length, ri_bpm, tw_length)
 	localStorage.setItem("wiLength", wi_length);
 	localStorage.setItem("wiBPM", wi_bpm);
 	localStorage.setItem("riLength", ri_length);
@@ -271,7 +263,6 @@ function hiitifySpeed(){
 function getAndUpdateBPM(new_bpm) {
 	getSongBPM().then((sondBPM) => {
 		updateBPM(new_bpm)
-		printSpeedMultiplier();
 	})
 }
 
@@ -281,10 +272,6 @@ function updateBPM(new_bpm) {
 		changeCurrentSongToSpeed(bpmToPercentageSpeed(new_bpm)); 
 	};
 	return;
-}
-
-function printSpeedMultiplier(){
-	console.log("THIS IS SPEED MULTIPLIER " + document.getElementById("speed-extension-input").value);
 }
 
 /**
@@ -436,17 +423,19 @@ function loadButtons (evt) {
 	function add_Song_Change_Listener(){
 		if (document.querySelectorAll('[data-testid="nowplaying-track-link"]').length > 0){
 			clearInterval (jsInitChecktimer3);
+			// changes BPM on song change - we are assuming that for each playlist, it doesn't have
+			// 2 songs of the exact same title but differnet BPM (which seems like a reasonable assumption)
 			var songTitleA = document.querySelectorAll('[data-testid="nowplaying-track-link"]')[0];
-			//add the listener
-			//when listener fires:
-			//if workout: 
-			if (sessionStorage.getItem("currentIntervalType") != null){ // only should fire if a workout is in progress
-				var newDesiredBPM = (sessionStorage.getItem("currentIntervalType") == "work") ? localStorage.getItem("wiBPM") : localStorage.getItem("riBPM");
-				getAndUpdateBPM(newDesiredBPM);
-			}
-
-
-
+			var observer = new MutationObserver(function(mutations) {
+				if (sessionStorage.getItem("currentIntervalType") != null){ // only should fire if a workout is in progress
+					var newDesiredBPM = (sessionStorage.getItem("currentIntervalType") == "work") ? localStorage.getItem("wiBPM") : localStorage.getItem("riBPM");
+					getAndUpdateBPM(newDesiredBPM);
+				}
+			});
+			// configuration of the observer:
+			var config = { attributes: true, childList: true, characterData: true };
+			// pass in the target node, as well as the observer options
+			observer.observe(songTitleA, config);
 		}
 	}
 }
@@ -861,7 +850,7 @@ function makeXHR(method, url, token) {
 function getSongBPM(){
 	let promise = getCurrentSong(localStorage.getItem("accessToken"))
 	.then(id => {
-		console.log("THIS IS SONG ID: " + id);
+		console.log("THIS IS THE SONG ID: " + id);
 		if (id === ""){ //if no song is playing
 			return "";
 		}
