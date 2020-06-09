@@ -139,6 +139,13 @@ function startTimer(duration, fromPause) {
 			(currentIntervalRemainingTime == localStorage.getItem("riLength") && sessionStorage.getItem("currentIntervalType") == "rest") ){
 			intervalTimeRemainingText.style.color = themeGreen; 
 			beep("first");
+			// changes BPM on interval change
+			if (sessionStorage.getItem("currentIntervalType") == "work"){
+				updateBPM(localStorage.getItem("wiBPM"));
+			}
+			else{
+				updateBPM(localStorage.getItem("riBPM"));
+			}
 		}
 		else if (parseInt(currentIntervalRemainingTime, 10) <= 3){ // sets text red and beeps
 			intervalTimeRemainingText.style.color = themeRed; 
@@ -154,6 +161,7 @@ function startTimer(duration, fromPause) {
 		var previousIntervalTimeLeft = parseInt(sessionStorage.getItem("currentIntervalRemainingTime"), 10);
 		var updatedIntervalTimeLeft = previousIntervalTimeLeft - 1;
 		sessionStorage.setItem("currentIntervalRemainingTime", updatedIntervalTimeLeft);
+		(console.log(previousIntervalTimeLeft));
 
 		//edge case where either workout or rest interval is 0 seconds
 		if ((localStorage.getItem("wiLength") == "0") || (localStorage.getItem("riLength") == "0")){	
@@ -172,13 +180,12 @@ function startTimer(duration, fromPause) {
 				if (sessionStorage.getItem("currentIntervalType") === "rest") { 
 					sessionStorage.setItem("currentIntervalRemainingTime", localStorage.getItem("wiLength")); 
 					sessionStorage.setItem("currentIntervalType", "work");
-					updateBPM(localStorage.getItem("wiBPM"));
 				} else{ 
 					sessionStorage.setItem("currentIntervalRemainingTime", localStorage.getItem("riLength")); 
 					sessionStorage.setItem("currentIntervalType", "rest");
-					updateBPM(localStorage.getItem("riBPM"));
+
 				}
-			}
+			}			
 		}
 		if (--timer < 0) { // when time runs out, stop workout
 			//TODO maybe congrats yadda yadda
@@ -397,6 +404,7 @@ function loadButtons (evt) {
     var jsInitChecktimer = setInterval (add_Hiitify_Button, 111);
 	var jsInitChecktimer1 = setInterval (add_Auth_Button, 111);
 	var jsInitChecktimer2 = setInterval (add_Update_Speed_Text_Listener, 111);
+	var jsInitChecktimer3 = setInterval(add_Song_Change_Listener);
 
     //loading the hiitify button when things load
     function add_Hiitify_Button () {
@@ -423,7 +431,24 @@ function loadButtons (evt) {
 			speed_extension_input.oninput = updateTextCurrentSpeed;
 			speed_extension_input.style.width = '100%';	
 		}
-    }
+	}
+	
+	function add_Song_Change_Listener(){
+		if (document.querySelectorAll('[data-testid="nowplaying-track-link"]').length > 0){
+			clearInterval (jsInitChecktimer3);
+			var songTitleA = document.querySelectorAll('[data-testid="nowplaying-track-link"]')[0];
+			//add the listener
+			//when listener fires:
+			//if workout: 
+			if (sessionStorage.getItem("currentIntervalType") != null){ // only should fire if a workout is in progress
+				var newDesiredBPM = (sessionStorage.getItem("currentIntervalType") == "work") ? localStorage.getItem("wiBPM") : localStorage.getItem("riBPM");
+				getAndUpdateBPM(newDesiredBPM);
+			}
+
+
+
+		}
+	}
 }
 
 /**
