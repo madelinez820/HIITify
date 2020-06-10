@@ -450,8 +450,11 @@ function loadButtons (evt) {
 			playPauseMusicButton = (document.querySelectorAll("button[data-testid~= 'control-button-play']").length > 0) ? document.querySelectorAll("button[data-testid~= 'control-button-play']")[0] : document.querySelectorAll("button[data-testid~= 'control-button-pause']")[0];
 
 			var playPauseMusicObserver = new MutationObserver(function(mutations) {
-				console.log("play pause music button clicked");
-				//TODO Kris listener code here
+				if (playPauseMusicButton.title == "Pause") { // went from pause to play
+					//TODO Kris listener code here
+					console.log("play pause music button clicked");
+				}
+
 			});
 			// configuration of the observer:
 			var config = { attributes: true, childList: true, characterData: true,  attributeFilter: ['title']};
