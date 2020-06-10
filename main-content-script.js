@@ -451,8 +451,11 @@ function loadButtons (evt) {
 
 			var playPauseMusicObserver = new MutationObserver(function(mutations) {
 				if (playPauseMusicButton.title == "Pause") { // went from pause to play
-					//TODO Kris listener code here
-					console.log("play pause music button clicked");
+					if (sessionStorage.getItem("currentIntervalType") != null) {
+						var newDesiredBPM = (sessionStorage.getItem("currentIntervalType") == "work") ? localStorage.getItem("wiBPM") : localStorage.getItem("riBPM");
+						getAndUpdateBPM(newDesiredBPM);
+						console.log("play pause music button clicked");
+					}
 				}
 
 			});
