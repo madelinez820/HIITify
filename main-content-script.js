@@ -1,4 +1,5 @@
 
+const debug = false
 /** ============================================================================================================*/
 /*  Descriptions of variables stored in local / session storage (note that all variables must be STRINGS)
 local storage:
@@ -441,8 +442,6 @@ function loadButtons (evt) {
 	}
 
 	function add_PlayPause_Music_Button_Listener(){
-		// console.log((document.querySelectorAll("button[data-testid~= 'control-button-play']").length > 0))
-		// console.log(document.querySelectorAll("button[data-testid~= 'control-button-pause']").length > 0);
 		if ((document.querySelectorAll("button[data-testid~= 'control-button-play']").length > 0) || (document.querySelectorAll("button[data-testid~= 'control-button-pause']").length > 0)){ // music play/pause button exists
 			clearInterval (jsInitChecktimer4);
 			playPauseMusicButton = (document.querySelectorAll("button[data-testid~= 'control-button-play']").length > 0) ? document.querySelectorAll("button[data-testid~= 'control-button-play']")[0] : document.querySelectorAll("button[data-testid~= 'control-button-pause']")[0];
@@ -452,7 +451,7 @@ function loadButtons (evt) {
 					if (sessionStorage.getItem("currentIntervalType") != null) {
 						var newDesiredBPM = (sessionStorage.getItem("currentIntervalType") == "work") ? localStorage.getItem("wiBPM") : localStorage.getItem("riBPM");
 						getAndUpdateBPM(newDesiredBPM);
-						console.log("play pause music button clicked");
+						if (debug) {console.log("play pause music button clicked")};
 					}
 				}
 
@@ -861,7 +860,7 @@ function makeXHR(method, url, token) {
 function getSongBPM(){
 	let promise = getCurrentSong(localStorage.getItem("accessToken"))
 	.then(id => {
-		console.log("THIS IS THE SONG ID: " + id);
+		if (debug) {console.log("THIS IS THE SONG ID: " + id)};
 		if (id === ""){ //if no song is playing
 			return "";
 		}
@@ -870,12 +869,12 @@ function getSongBPM(){
 	.then(data => {
 		if (data === ""){
 			currentSongBPM = 0; // maybe dangerous
-			console.log("BPM is 0 (no song playing)");
+			if (debug) {console.log("BPM is 0 (no song playing)")};
 			return;
 		}
 		let parsedData = JSON.parse(data)
 		currentSongBPM = parsedData.track.tempo
-		console.log("THIS IS THE BPM: " +  currentSongBPM);	
+		if (debug) {console.log("THIS IS THE BPM: " +  currentSongBPM)};
 		sessionStorage.setItem("currentSongOriginalBPM", currentSongBPM);
 	});
 	return promise;
