@@ -398,10 +398,10 @@ function loadButtons (evt) {
 
     //loading the hiitify button when things load
     function add_Hiitify_Button () {
-        if ( document.getElementsByClassName('now-playing-bar__right').length > 0) {
+        if ( document.getElementsByClassName('now-playing-bar').length > 0) {
             clearInterval (jsInitChecktimer);
             var hiitify_button = makeHittifyButton()
-            document.getElementsByClassName('now-playing-bar__right')[0].appendChild (hiitify_button);
+            document.getElementsByClassName('now-playing-bar')[0].appendChild (hiitify_button);
         }
 	}
 
