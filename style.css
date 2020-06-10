@@ -212,7 +212,8 @@ transform: scale(1.05) perspective(1px)
 /* used for the button that has hiitify toggle / auth functionality */
 .auth-button {
     border: 2px solid;
-    padding: 14px 28px;
+    padding: 14px 24px;
+    margin-left: 20px;
     border-radius: 25px;
     background-color: rgb(29, 185, 91);
     color: white;
@@ -284,4 +285,10 @@ filter: grayscale(100%) sepia(100%) hue-rotate(90deg) brightness(2.0);
     100% {
       opacity: 1;
     }
+}
+
+.now-playing-bar__right__inner{
+  display: flex;
+  justify-content: center;
+  align-items: center; 
 }
