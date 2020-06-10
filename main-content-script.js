@@ -1,4 +1,5 @@
 
+const debug = false
 /** ============================================================================================================*/
 /*  Descriptions of variables stored in local / session storage (note that all variables must be STRINGS)
 local storage:
@@ -342,10 +343,18 @@ function cleanUpWorkoutVariables(){
 function ToggleWorkoutDiv() {
     var x = document.getElementById("workoutDiv");
     if (x.style.display === "none") {
-      x.style.display = "block";
+	  auth_handler()
+	  x.style.display = "block";
     } else {
       x.style.display = "none";
 	}
+}
+
+function auth_handler(){
+	let promise = chrome.extension.sendMessage({
+		action: 'launchOauth'
+	});
+	return promise;
 }
 /**
  * Toggles between the settings elements and the workout elements
@@ -391,7 +400,6 @@ function ToggleStartStopWorkout() {
 /** ============================================================================================================*/
 function loadButtons (evt) {
     var jsInitChecktimer = setInterval (add_Hiitify_Button, 111);
-	var jsInitChecktimer1 = setInterval (add_Auth_Button, 111);
 	var jsInitChecktimer2 = setInterval (add_Update_Speed_Text_Listener, 111);
 	var jsInitChecktimer3 = setInterval(add_Song_Change_Listener);
 	var jsInitChecktimer4 = setInterval(add_PlayPause_Music_Button_Listener);
@@ -403,15 +411,6 @@ function loadButtons (evt) {
             var hiitify_button = makeHittifyButton()
             document.getElementsByClassName('now-playing-bar')[0].appendChild (hiitify_button);
         }
-	}
-
-	//loading the auth button when things load
-	function add_Auth_Button () {
-		if ( document.getElementsByClassName('now-playing-bar__left').length > 0) {
-			clearInterval (jsInitChecktimer1);
-			var auth_button = makeAuthButton()
-			document.getElementsByClassName('now-playing-bar__left')[0].appendChild (auth_button);
-		}	
 	}
 		
 	function add_Update_Speed_Text_Listener () {
@@ -443,16 +442,17 @@ function loadButtons (evt) {
 	}
 
 	function add_PlayPause_Music_Button_Listener(){
-		// console.log((document.querySelectorAll("button[data-testid~= 'control-button-play']").length > 0))
-		// console.log(document.querySelectorAll("button[data-testid~= 'control-button-pause']").length > 0);
 		if ((document.querySelectorAll("button[data-testid~= 'control-button-play']").length > 0) || (document.querySelectorAll("button[data-testid~= 'control-button-pause']").length > 0)){ // music play/pause button exists
 			clearInterval (jsInitChecktimer4);
 			playPauseMusicButton = (document.querySelectorAll("button[data-testid~= 'control-button-play']").length > 0) ? document.querySelectorAll("button[data-testid~= 'control-button-play']")[0] : document.querySelectorAll("button[data-testid~= 'control-button-pause']")[0];
 
 			var playPauseMusicObserver = new MutationObserver(function(mutations) {
 				if (playPauseMusicButton.title == "Pause") { // went from pause to play
-					//TODO Kris listener code here
-					console.log("play pause music button clicked");
+					if (sessionStorage.getItem("currentIntervalType") != null) {
+						var newDesiredBPM = (sessionStorage.getItem("currentIntervalType") == "work") ? localStorage.getItem("wiBPM") : localStorage.getItem("riBPM");
+						getAndUpdateBPM(newDesiredBPM);
+						if (debug) {console.log("play pause music button clicked")};
+					}
 				}
 
 			});
@@ -473,20 +473,6 @@ function makeHittifyButton(){
 	b.className = "auth-button spacing-horizontal";
 	b.addEventListener("click", ToggleWorkoutDiv);
     return b;
-}
-
-/** Creates the authentication button */
-function makeAuthButton(){
-  var b = document.createElement("button");
-  b.id =  "authBtn";
-  b.innerHTML = 'Auth Button';
-  b.addEventListener("click", handler);
-  return b;
-}
-function handler(){
-  chrome.extension.sendMessage({
-    action: 'launchOauth'
-  })
 }
 
 /**
@@ -874,7 +860,7 @@ function makeXHR(method, url, token) {
 function getSongBPM(){
 	let promise = getCurrentSong(localStorage.getItem("accessToken"))
 	.then(id => {
-		console.log("THIS IS THE SONG ID: " + id);
+		if (debug) {console.log("THIS IS THE SONG ID: " + id)};
 		if (id === ""){ //if no song is playing
 			return "";
 		}
@@ -883,12 +869,12 @@ function getSongBPM(){
 	.then(data => {
 		if (data === ""){
 			currentSongBPM = 0; // maybe dangerous
-			console.log("BPM is 0 (no song playing)");
+			if (debug) {console.log("BPM is 0 (no song playing)")};
 			return;
 		}
 		let parsedData = JSON.parse(data)
 		currentSongBPM = parsedData.track.tempo
-		console.log("THIS IS THE BPM: " +  currentSongBPM);	
+		if (debug) {console.log("THIS IS THE BPM: " +  currentSongBPM)};
 		sessionStorage.setItem("currentSongOriginalBPM", currentSongBPM);
 	});
 	return promise;
