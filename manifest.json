@@ -4,13 +4,9 @@
   "version": "0.1",
   "permissions": [
     "storage",
-        "identity",
-        "tabs",
-        "webNavigation",
-        "https://*.spotify.com/*",
-        "*://*.google.com/*",
-        "storage",
-        "alarms"
+    "identity",
+    "https://*.spotify.com/*",
+    "*://*.google.com/*"
   ],
         "web_accessible_resources": [
           "/oauth2/*"
