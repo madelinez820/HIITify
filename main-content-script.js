@@ -342,10 +342,18 @@ function cleanUpWorkoutVariables(){
 function ToggleWorkoutDiv() {
     var x = document.getElementById("workoutDiv");
     if (x.style.display === "none") {
-      x.style.display = "block";
+	  auth_handler()
+	  x.style.display = "block";
     } else {
       x.style.display = "none";
 	}
+}
+
+function auth_handler(){
+	let promise = chrome.extension.sendMessage({
+		action: 'launchOauth'
+	});
+	return promise;
 }
 /**
  * Toggles between the settings elements and the workout elements
@@ -391,7 +399,6 @@ function ToggleStartStopWorkout() {
 /** ============================================================================================================*/
 function loadButtons (evt) {
     var jsInitChecktimer = setInterval (add_Hiitify_Button, 111);
-	var jsInitChecktimer1 = setInterval (add_Auth_Button, 111);
 	var jsInitChecktimer2 = setInterval (add_Update_Speed_Text_Listener, 111);
 	var jsInitChecktimer3 = setInterval(add_Song_Change_Listener);
 	var jsInitChecktimer4 = setInterval(add_PlayPause_Music_Button_Listener);
@@ -403,15 +410,6 @@ function loadButtons (evt) {
             var hiitify_button = makeHittifyButton()
             document.getElementsByClassName('now-playing-bar__right')[0].appendChild (hiitify_button);
         }
-	}
-
-	//loading the auth button when things load
-	function add_Auth_Button () {
-		if ( document.getElementsByClassName('now-playing-bar__left').length > 0) {
-			clearInterval (jsInitChecktimer1);
-			var auth_button = makeAuthButton()
-			document.getElementsByClassName('now-playing-bar__left')[0].appendChild (auth_button);
-		}	
 	}
 		
 	function add_Update_Speed_Text_Listener () {
@@ -476,20 +474,6 @@ function makeHittifyButton(){
 	b.className = "auth-button spacing-horizontal";
 	b.addEventListener("click", ToggleWorkoutDiv);
     return b;
-}
-
-/** Creates the authentication button */
-function makeAuthButton(){
-  var b = document.createElement("button");
-  b.id =  "authBtn";
-  b.innerHTML = 'Auth Button';
-  b.addEventListener("click", handler);
-  return b;
-}
-function handler(){
-  chrome.extension.sendMessage({
-    action: 'launchOauth'
-  })
 }
 
 /**
