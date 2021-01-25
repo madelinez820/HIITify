@@ -1,6 +1,6 @@
-var $SPOTIFY_CLIENT_ID = 'your own client id'
-var $SPOTIFY_CLIENT_SECRET = 'your own client secret'
-var $CHROME_TOKEN = 'your own chrome token'
+var $SPOTIFY_CLIENT_ID = '7d47ddc489c441b3ace386f1542fac57'
+var $SPOTIFY_CLIENT_SECRET = 'fffe965056d146f8900cdc4da7890df0'
+var $CHROME_TOKEN = 'noecanhkicbhgccjpjfedhopkmhecmok'
 
 chrome.runtime.onInstalled.addListener(function(){
   chrome.storage.local.set({status: 0}, function(innerObj){

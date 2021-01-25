@@ -540,7 +540,7 @@ function makeWorkoutDiv(){
 	br1.id ="br1";
 	input_wrapper.appendChild(br1);
 	var wi_length_input = document.createElement("input");
-	wi_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
+	wi_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss inputNums";
 	wi_length_input.id="wi_length";
 	wi_length_input.onkeypress = OnlyNums;
 	wi_length_input.value= (localStorage.getItem("wiLength") == undefined) ? "30" : localStorage.getItem("wiLength");
@@ -559,7 +559,7 @@ function makeWorkoutDiv(){
 	br3.id ="br3";
 	input_wrapper.appendChild(br3);
 	var wi_bpm_input = document.createElement("input");
-	wi_bpm_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
+	wi_bpm_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss inputNums";
 	wi_bpm_input.id="wi_bpm";
 	wi_bpm_input.onkeypress = OnlyNums;
 	wi_bpm_input.value= (localStorage.getItem("wiBPM") == undefined) ? "160" : localStorage.getItem("wiBPM");
@@ -578,7 +578,7 @@ function makeWorkoutDiv(){
 	br5.id ="br5";
 	input_wrapper.appendChild(br5);
 	var ri_length_input = document.createElement("input");
-	ri_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
+	ri_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss inputNums";
 	ri_length_input.id="ri_length";
 	ri_length_input.onkeypress = OnlyNums;
 	ri_length_input.value= (localStorage.getItem("riLength") == undefined) ? "10" : localStorage.getItem("riLength");
@@ -597,7 +597,7 @@ function makeWorkoutDiv(){
 	br7.id ="br7";
 	input_wrapper.appendChild(br7);
 	var ri_bpm_input = document.createElement("input");
-	ri_bpm_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
+	ri_bpm_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss inputNums";
 	ri_bpm_input.id="ri_bpm";
 	ri_bpm_input.onkeypress = OnlyNums;
 	ri_bpm_input.value = "115";
@@ -617,7 +617,7 @@ function makeWorkoutDiv(){
 	br9.id ="br9";
 	input_wrapper.appendChild(br9);
 	var tw_length_input = document.createElement("input");
-	tw_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss";
+	tw_length_input.className = "_2f8ed265fb69fb70c0c9afef329ae0b6-scss inputNums";
 	tw_length_input.id="tw_length";
 	tw_length_input.onkeypress = OnlyNums;
 	tw_length_input.value= (localStorage.getItem("twLength") == undefined) ? "10" : localStorage.getItem("twLength");
